@@ -1,5 +1,5 @@
-const { cmd } = require('../command');
 const config = require('../config');
+const { cmd, commands } = require('../command');
 
 cmd({
     pattern: "owner",
@@ -16,7 +16,7 @@ async (conn, mek, m, { from }) => {
         const vcard = 'BEGIN:VCARD\n' +
                       'VERSION:3.0\n' +
                       `FN:${ownerName}\n` +  
-                      `TEL;type=CELL;type=VOICE;waid=${ownerNumber.replace('+', '')}:${ownerNumber}\n` + 
+                      `TEL;type=CELL;type=VOICE;waid=\( {ownerNumber.replace('+', '')}: \){ownerNumber}\n` + 
                       'END:VCARD';
 
         // Send the vCard
@@ -29,8 +29,8 @@ async (conn, mek, m, { from }) => {
 
         // Send the owner contact message with image and audio
         await conn.sendMessage(from, {
-            image: { url: 'https://res.cloudinary.com/dgy2dutjs/image/upload/v1751659999/url.crissvevo.co.tz/%E1%B4%8F%CA%99%E1%B4%87%E1%B4%85%E1%B4%9B%E1%B4%87%E1%B4%84%CA%9C1_pl1cki.jpg' }, // Image URL from your request
-            caption: `╭━━〔 *ʜᴜɴᴛᴇʀ xᴍᴅ* 〕━━┈⊷
+            image: { url: 'https://files.catbox.moe/ntfw9h.jpg' }, // Updated image URL
+            caption: `╭━━〔 *GURU MD* 〕━━┈⊷
 ┃◈╭─────────────·๏
 ┃◈┃• *Here is the owner details*
 ┃◈┃• *Name* - ${ownerName}
@@ -38,14 +38,14 @@ async (conn, mek, m, { from }) => {
 ┃◈┃• *Version*: 2.0.0 Beta
 ┃◈└───────────┈⊷
 ╰──────────────┈⊷
-> © ᴘᴏᴡᴇʀᴇᴅ ʙʏ ʜᴜɴᴛᴇʀ xᴍᴅ`, // Display the owner's details
+> © ᴄʀᴇᴀᴛᴇᴅ ʙʏ GuruTech`, // Updated branding
             contextInfo: {
                 mentionedJid: [`${ownerNumber.replace('+', '')}@s.whatsapp.net`], 
                 forwardingScore: 999,
                 isForwarded: true,
                 forwardedNewsletterMessageInfo: {
-                    newsletterJid: '120363416335506023@newsletter',
-                    newsletterName: 'ʜᴜɴᴛᴇʀ xᴍᴅ',
+                    newsletterJid: '120363421164015033@newsletter',
+                    newsletterName: 'GURU MD',
                     serverMessageId: 143
                 }            
             }
@@ -53,7 +53,7 @@ async (conn, mek, m, { from }) => {
 
         // Send audio as per your request
         await conn.sendMessage(from, {
-            audio: { url: 'https://github.com/criss-vevo/CRISS-DATA/raw/refs/heads/main/autovoice/menunew.m4a' }, // Audio URL
+            audio: { url: 'https://github.com/criss-vevo/CRISS-DATA/raw/refs/heads/main/autovoice/menunew.m4a' }, // Audio URL unchanged
             mimetype: 'audio/mp4',
             ptt: true
         }, { quoted: mek });
