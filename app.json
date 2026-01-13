@@ -1,11 +1,11 @@
 {
-  "name": "𝐇𝐔𝐍𝐓𝐄𝐑 𝐗𝐌𝐃.𝟓",
-  "description": "Javascript WhatsApp bot made by ᴏʙᴇᴅᴛᴇᴄʜ",
-  "logo": "https://res.cloudinary.com/dgy2dutjs/image/upload/v1751656256/url.crissvevo.co.tz/%E1%B4%8F%CA%99%E1%B4%87%E1%B4%85%E1%B4%9B%E1%B4%87%E1%B4%84%CA%9C1_xyfpby.jpg",
-  "keywords": ["HUNTER-XMD.5"],
+  "name": "guru-md",
+  "description": "A WhatsApp Bot Created by GuruTech",
+  "logo": "https://files.catbox.moe/ntfw9h.jpg",
+  "keywords": ["GURU-MD"],
   "success_url": "/",
 
-    "stack": "container",
+  "stack": "container",
   "env": {
     "SESSION_ID": {
       "description": "Put the session-id here.",
@@ -16,7 +16,7 @@
     "STICKER_NAME": {
       "description": "type your sticker pack name.",
       "required": false,
-      "value": "𝐇𝐔𝐍𝐓𝐄𝐑 𝐗𝐌𝐃.𝟓"
+      "value": "GURU MD"
     }, 
       
     "PREFIX": {
@@ -29,9 +29,7 @@
       "description": "select your bot work type public-private-inbox-group.",
       "required": false,
       "value": "public"
-      
     },
-    
     
     "ALWAYS_ONLINE": {
       "description": "Make it true if want always online.",
@@ -40,7 +38,7 @@
     },    
   
     "AUTO_VOICE": {
-      "description": "Make it true if want automatic voice reply .",
+      "description": "Make it true if want automatic voice reply.",
       "required": false,
       "value": "false"
     }, 
@@ -56,7 +54,6 @@
       "required": false,
       "value": "false"
     }, 
-
 
     "AUTO_STATUS_SEEN": {
       "description": "Make it true for automatic status seen.",
@@ -79,42 +76,37 @@
     "AUTO_STATUS_MSG": {
       "description": "Type custom message on status reply",
       "required": true,
-      "value": "*𝚂𝙴𝙴𝙽 𝚈𝙾𝚄𝚁 𝚂𝚃𝙰𝚃𝚄𝚂 𝙱𝚈 𝙷𝚄𝙽𝚃𝙴𝚁-𝚇𝙼𝙳.𝟻 💟*"
-   
-     }, 
+      "value": "*SEEN YOUR STATUS BY GURU MD 🤍*"
+    }, 
     
     "OWNER_NAME": {
       "description": "Type Bot Owner Name.",
       "required": false,
-      "value": "ᴏʙᴇᴅᴛᴇᴄʜ"
-}, 
+      "value": "GuruTech"
+    }, 
 
     "OWNER_NUMBER": {
       "description": "put the owner number for bot.",
       "required": false,
-      "value": "254794146821"
-
+      "value": "254778074353"
     }, 
 
     "BOT_NAME": {
       "description": "Type here the bot name.",
       "required": false,
-      "value": "𝐇𝐔𝐍𝐓𝐄𝐑 𝐗𝐌𝐃.𝟓"
-
-      }, 
+      "value": "GURU MD"
+    }, 
 
     "ANTI_LINK": {
       "description": "Make it true if you want bot auto remove group link.",
       "required": true,
       "value": "true"
-      
     },
 
-     "ANTI_LINK_KICK": {
+    "ANTI_LINK_KICK": {
       "description": "Make it true if you want bot auto remove group link.",
       "required": true,
       "value": "false"
-      
     },
     
     "ANTI_BAD": {
@@ -123,8 +115,8 @@
       "value": "true"
     },
 
-   "MENTION_REPLY": {
-      "description": "make it true if want mention reply if someone menetion you.",
+    "MENTION_REPLY": {
+      "description": "make it true if want mention reply if someone mention you.",
       "required": false,
       "value": "false"
     },
@@ -132,16 +124,16 @@
     "MENU_IMAGE_URL": {
       "description": "add url for mention reply and menu if want.",
       "required": false,
-      "value": "https://files.catbox.moe/11w56r.jpg"
+      "value": "https://files.catbox.moe/ntfw9h.jpg"
     },
     
-     "DESCRIPTION": {
+    "DESCRIPTION": {
       "description": "add caption for menu and other",
       "required": false,
-      "value": "*© ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴏʙᴇᴅᴛᴇᴄʜ*"
+      "value": "*© ᴄʀᴇᴀᴛᴇᴅ ʙʏ GuruTech*"
     },
 
-      "DELETE_LINKS": {
+    "DELETE_LINKS": {
       "description": "remove links from group automatically without removing member",
       "required": false,
       "value": "false"
@@ -169,11 +161,10 @@
       "description": "Make it true if you want custom reactions.",
       "required": false,
       "value": "false"
-      
     }, 
     
     "CUSTOM_REACT_EMOJIS": {
-      "description": "put here custom react react emojis.",
+      "description": "put here custom react emojis.",
       "required": false,
       "value": "💝,💖,💗,❤️‍🩹,❤️,🧡,💛,💚,💙,💜,🤎,🖤,🤍"
     }, 
@@ -185,7 +176,7 @@
     }, 
 
     "ADMIN_EVENTS": {
-      "description": "make it true if want know who promote or demote a member .",
+      "description": "make it true if want know who promote or demote a member.",
       "required": false,
       "value": "false"
     },
@@ -201,14 +192,12 @@
       "required": false,
       "value": "false"
     }
+  },
 
-},
-
-     "buildpacks": [
-        {
-            "url": "https://github.com/heroku/heroku-buildpack-nodejs.git"
-        }
-     ],
+  "buildpacks": [
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-nodejs.git"
+    }
+  ],
   "stack": "heroku-24"
 }
-  
