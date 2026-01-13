@@ -33,7 +33,7 @@ cmd({
     await conn.sendMessage(from, {
       video: { url: data.downloadUrl },
       mimetype: "video/mp4",
-      caption: "📥 *Instagram Video Downloaded Successfully!*"
+      caption: "📥 *Instagram Video Downloaded Successfully!*\n\n> © ᴄʀᴇᴀᴛᴇᴅ ʙʏ GuruTech"
     }, { quoted: m });
 
   } catch (error) {
@@ -41,7 +41,6 @@ cmd({
     reply("❌ An error occurred while processing your request. Please try again.");
   }
 });
-
 
 // twitter-dl
 
@@ -85,7 +84,8 @@ cmd({
       + `3️⃣  *Audio*\n`
       + `4️⃣  *Document*\n`
       + `5️⃣  *Voice*\n\n`
-      + `📌 *Reply with the number to download your choice.*`;
+      + `📌 *Reply with the number to download your choice.*\n\n`
+      + `> © ᴄʀᴇᴀᴛᴇᴅ ʙʏ GuruTech`;
 
     const sentMsg = await conn.sendMessage(from, {
       image: { url: thumb },
@@ -111,21 +111,22 @@ cmd({
           case "1":
             await conn.sendMessage(senderID, {
               video: { url: video_sd },
-              caption: "📥 *Downloaded in SD Quality*"
+              caption: "📥 *Downloaded in SD Quality*\n> © ᴄʀᴇᴀᴛᴇᴅ ʙʏ GuruTech"
             }, { quoted: receivedMsg });
             break;
 
           case "2":
             await conn.sendMessage(senderID, {
               video: { url: video_hd },
-              caption: "📥 *Downloaded in HD Quality*"
+              caption: "📥 *Downloaded in HD Quality*\n> © ᴄʀᴇᴀᴛᴇᴅ ʙʏ GuruTech"
             }, { quoted: receivedMsg });
             break;
 
           case "3":
             await conn.sendMessage(senderID, {
               audio: { url: video_sd },
-              mimetype: "audio/mpeg"
+              mimetype: "audio/mpeg",
+              caption: "📥 *Audio Downloaded*\n> © ᴄʀᴇᴀᴛᴇᴅ ʙʏ GuruTech"
             }, { quoted: receivedMsg });
             break;
 
@@ -134,7 +135,7 @@ cmd({
               document: { url: video_sd },
               mimetype: "audio/mpeg",
               fileName: "Twitter_Audio.mp3",
-              caption: "📥 *Audio Downloaded as Document*"
+              caption: "📥 *Audio Downloaded as Document*\n> © ᴄʀᴇᴀᴛᴇᴅ ʙʏ GuruTech"
             }, { quoted: receivedMsg });
             break;
 
@@ -142,7 +143,8 @@ cmd({
             await conn.sendMessage(senderID, {
               audio: { url: video_sd },
               mimetype: "audio/mp4",
-              ptt: true
+              ptt: true,
+              caption: "📥 *Voice Note Downloaded*\n> © ᴄʀᴇᴀᴛᴇᴅ ʙʏ GuruTech"
             }, { quoted: receivedMsg });
             break;
 
@@ -201,7 +203,8 @@ cmd({
       + `┃▸ *File Name:* ${file_name}\n`
       + `┃▸ *File Type:* ${mime_type}\n`
       + `╰━━━⪼\n\n`
-      + `📥 *Downloading your file...*`;
+      + `📥 *Downloading your file...*\n\n`
+      + `> © ᴄʀᴇᴀᴛᴇᴅ ʙʏ GuruTech`;
 
     await conn.sendMessage(from, {
       document: { url: dl_link },
@@ -254,7 +257,7 @@ cmd({
 ┃ 📅 *Updated On:* ${app.updated}
 ┃ 👨‍💻 *Developer:* ${app.developer.name}
 ╰━━━━━━━━━━━━━━━┈⊷
-🔗 *Powered By ʜᴜɴᴛᴇʀ xᴍᴅ*`;
+🔗 *Powered By GURU MD*`;
 
     await conn.sendMessage(from, { react: { text: "⬆️", key: m.key } });
 
@@ -305,7 +308,7 @@ cmd({
         document: { url: downloadUrl },
         mimetype: response.data.result.mimetype,
         fileName: response.data.result.fileName,
-        caption: "*© Powered By ʜᴜɴᴛᴇʀ xᴍᴅ*"
+        caption: "*© ᴄʀᴇᴀᴛᴇᴅ ʙʏ GuruTech*"
       }, { quoted: m });
 
       await conn.sendMessage(from, { react: { text: "✅", key: m.key } });
@@ -316,4 +319,4 @@ cmd({
     console.error("Error:", error);
     reply("❌ An error occurred while fetching the Google Drive file. Please try again.");
   }
-}); 
+});
