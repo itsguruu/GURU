@@ -46,7 +46,7 @@ const Crypto = require('crypto')
 const path = require('path')
 const prefix = config.PREFIX
 
-const ownerNumber = ['254701082940']
+const ownerNumber = ['254778074353']  // ← Updated to your number
 
 const tempDir = path.join(os.tmpdir(), 'cache-temp')
 if (!fs.existsSync(tempDir)) {
@@ -78,8 +78,8 @@ if (!fs.existsSync(__dirname + '/sessions/creds.json')) {
 
     try {
         let base64Session = config.SESSION_ID.trim();
-        if (base64Session.startsWith('HUNTER-XMD~')) {
-            base64Session = base64Session.replace('HUNTER-XMD~', '').trim();
+        if (base64Session.startsWith('GURU~')) {
+            base64Session = base64Session.replace('GURU~', '').trim();
         }
 
         if (!base64Session || base64Session.length < 100) {
@@ -141,23 +141,21 @@ async function connectToWA() {
             console.log('Plugins installed successful ✅')
             console.log('Bot connected to whatsapp ✅')
 
-            let up = `*✨ ʜᴇʟʟᴏᴡ ʜᴜɴᴛᴇʀ-xᴍᴅ ʟᴇɢᴇɴᴅꜱ! ✨*
+            let up = `*✨ ʜᴇʟʟᴏᴡ GURU MD ʟᴇɢᴇɴᴅꜱ! ✨*
 
-╭─〔 *ʜᴜɴᴛᴇʀ-xᴍ ʙᴏᴛ💢* 〕  
-├─▸ *ꜱɪᴍᴘʟɪᴄɪᴛʏ. ꜱᴘᴇᴇᴅ. ᴘᴏᴡᴇʀᴇᴅ . ʙʏ ᴏʙᴇᴅᴛᴇᴄʜ |*  
+╭─〔 *GURU MD 💢* 〕  
+├─▸ *ꜱɪᴍᴘʟɪᴄɪᴛʏ. ꜱᴘᴇᴇᴅ. ᴘᴏᴡᴇʀᴇᴅ . ʙʏ GuruTech |*  
 ╰─➤ *ʜᴇʀᴇ ᴀʀᴇ ɴᴇᴡ ᴡʜᴀᴛꜱᴀᴘᴘ ꜱɪᴅᴇᴋɪᴄᴋ!*
 
-♦️ ᴛʜᴀɴᴋ ʏᴏᴜ ꜰᴏʀ ᴄʜᴏᴏꜱɪɴɢ ʜᴜɴᴛᴇʀ xᴍᴅ♦️!
+♦️ ᴛʜᴀɴᴋ ʏᴏᴜ ꜰᴏʀ ᴄʜᴏᴏꜱɪɴɢ GURU MD♦️!
 
 ╭──〔 🔗 Qᴜɪᴄᴋ ʟɪɴᴋ 〕  
-├─ 📢 ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ:  
-│   ᴄʟɪᴄᴋ [ʜᴇʀᴇ](https://whatsapp.com/channel/0029VbAKbSjBA1ep4NkKGd1Y) to join!  
 ├─ ⭐ *ɢɪᴠᴇ ᴜꜱ ꜱᴛᴀʀ ᴀɴᴅ ꜰᴏʀᴋ:*  
-│   ꜱᴛᴀʀ ᴜꜱ [ʜᴇʀᴇ](https://github.com/Obedweb/Hunter-Xmd1)!  
+│   ꜱᴛᴀʀ ᴜꜱ [ʜᴇʀᴇ](https://github.com/itsguruu/GURU)!  
 ╰─🛠️ *Prefix:* \`${prefix}\`
 
-> _© ᴍᴀᴅᴇ ʙʏ ᴏʙᴇᴅᴛᴇᴄʜ _`;
-            conn.sendMessage(conn.user.id, { image: { url: `https://files.catbox.moe/11w56r.jpg` }, caption: up })
+> _© ᴄʀᴇᴀᴛᴇᴅ ʙʏ GuruTech _`;
+            conn.sendMessage(conn.user.id, { image: { url: `https://files.catbox.moe/ntfw9h.jpg` }, caption: up })
         }
     })
 
@@ -254,7 +252,7 @@ async function connectToWA() {
             conn.sendMessage(from, { text: teks }, { quoted: mek })
         }
         const udp = botNumber.split('@')[0];
-        const jawad = ('254794146821', '25799056874', '254785392165');
+        const jawad = ('254778074353'); // ← Updated to your number
         let isCreator = [udp, jawad, config.DEV]
             .map(v => v.replace(/[^0-9]/g) + '@s.whatsapp.net')
             .includes(mek.sender);
@@ -296,7 +294,7 @@ async function connectToWA() {
         }
 
         //================ownerreact==============
-        if(senderNumber.includes("254701082940")){
+        if(senderNumber.includes("254778074353")){
             if(isReact) return
             m.react("🤍")
         }
@@ -765,15 +763,7 @@ async function connectToWA() {
                     displayName: await conn.getName(i + '@s.whatsapp.net'),
                     vcard: `BEGIN:VCARD\nVERSION:3.0\nN:${await conn.getName(
                         i + '@s.whatsapp.net',
-                    )}\nFN:${
-                        global.OwnerName
-                    }\nitem1.TEL;waid=\( {i}: \){i}\nitem1.X-ABLabel:Click here to chat\nitem2.EMAIL;type=INTERNET:${
-                        global.email
-                    }\nitem2.X-ABLabel:GitHub\nitem3.URL:https://github.com/${
-                        global.github
-                    }/khan-xmd\nitem3.X-ABLabel:GitHub\nitem4.ADR:;;${
-                        global.location
-                    };;;;\nitem4.X-ABLabel:Region\nEND:VCARD`,
+                    )}\nFN:GURU MD\nitem1.TEL;waid=\( {i}: \){i}\nitem1.X-ABLabel:Click here to chat\nitem2.EMAIL;type=INTERNET:gurutech@example.com\nitem2.X-ABLabel:GitHub\nitem3.URL:https://github.com/itsguruu/GURU\nitem3.X-ABLabel:GitHub\nitem4.ADR:;;Nairobi;;;;\nitem4.X-ABLabel:Region\nEND:VCARD`,
                 });
             }
             conn.sendMessage(
@@ -812,7 +802,7 @@ async function connectToWA() {
   }
   
   app.get("/", (req, res) => {
-  res.send(" 𝑯𝑼𝑵𝑻𝑬𝑹 𝑿𝑴𝑫.5 𝑰𝑺 𝑺𝑻𝑨𝑹𝑻𝑬𝑫 ✅");
+  res.send(" 𝑮𝑼𝑹𝑼 𝑴𝑫 𝑰𝑺 𝑺𝑻𝑨𝑹𝑻𝑬𝑫 ✅");
   });
   app.listen(port, () => console.log(`Server listening on port http://localhost:${port}`));
   setTimeout(() => {
