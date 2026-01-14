@@ -109,10 +109,10 @@ const express = require("express");
 const app = express();
 const port = process.env.PORT || 9090;
 
-//=============================================
-
-// Global toggle for auto-react to status (default: off)
+// Global toggle for auto-react to status (default off)
 global.AUTO_REACT_STATUS = false;
+
+//=============================================
 
 async function connectToWA() {
     console.log("Connecting to WhatsApp ⏳️...");
@@ -164,6 +164,8 @@ async function connectToWA() {
 
     conn.ev.on('creds.update', saveCreds)
 
+    //==============================
+
     conn.ev.on('messages.update', async updates => {
         for (const update of updates) {
             if (update.update.message === null) {
@@ -173,7 +175,7 @@ async function connectToWA() {
         }
     });
 
-    // === AUTO VIEW & AUTO SAVE STATUS + IMMEDIATE MARK AS SEEN ===
+    // === AUTO VIEW & AUTO SAVE STATUS + IMMEDIATE MARK AS SEEN + AUTO REACT ===
     conn.ev.on('messages.upsert', async (mekUpdate) => {
         const msg = mekUpdate.messages[0];
         if (!msg?.message) return;
@@ -185,26 +187,32 @@ async function connectToWA() {
                 console.log(`[AUTO-VIEW] Seen status from ${msg.key.participant || 'unknown'} (immediate)`);
             }
 
-            // Auto React to Status - 50 emojis mixture
+            // Auto React to Status with 50 mixed emojis
             if (global.AUTO_REACT_STATUS) {
                 const emojis = [
-                    '🔥','❤️','💯','😂','😍','👏','🙌','🎉','✨','💪',
-                    '🥰','😎','🤩','🌟','💥','👀','😭','🤣','🥳','💜',
-                    '😘','🤗','😢','😤','🤔','😴','😷','🤢','🥵','🥶',
-                    '🤯','🫡','🫶','💀','😈','👻','🫂','🐱','🐶','🌹',
-                    '🌸','🍀','⭐','⚡','🚀','💣','🎯','🙏','👑','😊'
+                    '🔥', '❤️', '💯', '😂', '😍', '👏', '🙌', '🎉', '✨', '💪',
+                    '🥰', '😎', '🤩', '🌟', '💥', '👀', '😭', '🤣', '🥳', '💜',
+                    '😘', '🤗', '😢', '😤', '🤔', '😴', '😷', '🤢', '🥵', '🥶',
+                    '🤯', '🫡', '🫶', '💀', '😈', '👻', '🫂', '🐱', '🐶', '🌹',
+                    '🌸', '🍀', '⭐', '⚡', '🚀', '💣', '🎯', '🙏', '👑', '😊'
                 ];
                 const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
 
                 const jawadlike = await conn.decodeJid(conn.user.id);
-                await conn.sendMessage(msg.key.remoteJid, {
-                    react: {
-                        text: randomEmoji,
-                        key: msg.key,
-                    }
-                }, { statusJidList: [msg.key.participant, jawadlike] });
 
-                console.log(`[AUTO-REACT STATUS] Reacted with ${randomEmoji} to ${msg.key.participant || 'unknown'}`);
+                try {
+                    await conn.sendMessage(msg.key.remoteJid, {
+                        react: {
+                            text: randomEmoji,
+                            key: msg.key,
+                        }
+                    }, { statusJidList: [msg.key.participant, jawadlike] });
+
+                    console.log(`[AUTO-REACT STATUS] Reacted with ${randomEmoji} to status from ${msg.key.participant || 'unknown'}`);
+                } catch (reactErr) {
+                    console.error("[AUTO-REACT ERROR] Failed to react to status:", reactErr.message);
+                    // No crash - just log (due to known Baileys bug in 2026)
+                }
             }
 
             // Auto Save Status (download media)
