@@ -1,96 +1,68 @@
 const { cmd } = require('../command');
-const yts = require('yt-search');
-const { YtDlp } = require('ytdlp-nodejs');
-const fs = require('fs');
-const path = require('path');
+const axios = require('axios');
 
 cmd({
     pattern: "play",
     alias: ["song", "ytplay", "music"],
-    desc: "Download & send YouTube song as MP3 with nice audio player",
+    desc: "Search & download YouTube song as MP3 (using reliable API)",
     category: "download",
-    use: ".play <song name or URL>",
+    use: ".play <song name>",
     react: "🎵",
     filename: __filename
-}, async (conn, mek, m, { from, q, reply, sender }) => {
+}, async (conn, mek, m, { from, q, reply }) => {
     try {
-        if (!q) return reply("❌ Provide song name or YouTube link!\nEg: .play perfect ed sheeran");
+        if (!q) return reply("❌ Provide a song name!\nExample: .play alan walker the spectre");
 
         await conn.sendMessage(from, { react: { text: "⏳", key: mek.key } });
 
-        let videoUrl, title, thumbnailUrl;
+        // Step 1: Search via the API (your JSON example format)
+        const searchUrl = `https://api.silvatechinc.my.id/ytplay?query=${encodeURIComponent(q)}`; // ← adjust if needed
+        const searchRes = await axios.get(searchUrl);
+        const data = searchRes.data;
 
-        // Handle URL or search
-        if (q.match(/(youtube\.com|youtu\.be)/)) {
-            videoUrl = q.trim();
-            const info = await yts({ videoId: q.split(/[=/]/).pop() });
-            title = info.title || "Song";
-            thumbnailUrl = info.thumbnail;
-        } else {
-            const search = await yts(q);
-            if (!search.videos.length) return reply("No results found 😕");
-            const vid = search.videos[0];
-            videoUrl = vid.url;
-            title = vid.title;
-            thumbnailUrl = vid.thumbnail;
+        if (!data.status || !data.result || data.result.length === 0) {
+            return reply("⚠️ No results found or API error.");
         }
 
-        reply(`🎧 Downloading *${title}*...`);
+        // Pick the best/first result (you can improve with views/duration sorting)
+        const best = data.result[0];
+        const title = best.title;
+        const ytUrl = best.url;
+        const thumbnail = best.thumbnail;
 
-        const ytdlp = new YtDlp();
-        const tempDir = path.join(__dirname, '../temp');
-        if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, { recursive: true });
+        reply(`🎧 Found: *\( {title}* ( \){best.duration})\nDownloading audio...`);
 
-        const safeTitle = title.replace(/[^\w\s]/gi, '_');
-        const outputPath = path.join(tempDir, `\( {Date.now()}_ \){safeTitle}.mp3`);
+        // Step 2: If the API provides direct download, use it (from your old code)
+        // If not, assume we need a separate /download endpoint with ID or URL
+        const downloadUrl = `https://api.silvatechinc.my.id/download/ytmp3?url=${encodeURIComponent(ytUrl)}`; // ← example, change to real
 
-        // Download best audio as mp3
-        await ytdlp.download(videoUrl, {
-            extractAudio: true,
-            audioFormat: 'mp3',
-            audioQuality: 0, // best
-            output: outputPath,
-            addMetadata: true,
-            embedThumbnail: true
-        });
+        const dlRes = await axios.get(downloadUrl, { responseType: 'arraybuffer' }); // or stream if large
 
-        if (!fs.existsSync(outputPath)) throw new Error("Download failed");
+        if (!dlRes.data) throw new Error("No audio data");
 
-        // Optional: Get thumbnail buffer for better preview (WhatsApp loves it)
-        let thumbBuffer;
-        try {
-            const thumbResponse = await fetch(thumbnailUrl);
-            thumbBuffer = await thumbResponse.buffer();
-        } catch {}
-
-        // Send as AUDIO → gets the nice player + waveform + progress bar
+        // Send as audio with nice player format
         await conn.sendMessage(from, {
-            audio: { url: outputPath },
+            audio: dlRes.data, // Buffer
             mimetype: 'audio/mpeg',
-            fileName: `${safeTitle}.mp3`,
-            caption: `🎵 *${title}*\nPowered by Guru MD • Downloaded from YouTube`,
-            ...(thumbBuffer ? { jpegThumbnail: thumbBuffer } : {}),
+            fileName: `${title.replace(/[^\w]/g, '_')}.mp3`,
+            caption: `🎵 *${title}*\n> Duration: ${best.duration}\n> Views: ${best.views}\n> © ᴄʀᴇᴀᴛᴇᴅ ʙʏ GuruTech`,
+            ...(thumbnail ? { jpegThumbnail: { url: thumbnail } } : {}),
             contextInfo: {
-                forwardingScore: 999,
-                isForwarded: true, // optional: makes it look like forwarded music
                 externalAdReply: {
                     title: title,
-                    body: "Song • Artist • YouTube",
-                    thumbnail: thumbBuffer || undefined,
+                    body: "YouTube Song • Powered by API",
+                    thumbnailUrl: thumbnail,
                     mediaType: 2,
-                    sourceUrl: videoUrl,
+                    sourceUrl: ytUrl,
                     renderLargerThumbnail: true
                 }
             }
         }, { quoted: mek });
 
-        reply(`✅ Sent as audio player! Play & enjoy 🎧`);
-
-        // Cleanup
-        setTimeout(() => fs.unlink(outputPath, () => {}), 60000);
+        await conn.sendMessage(from, { react: { text: "✅", key: mek.key } });
 
     } catch (e) {
-        console.error(e);
-        reply(`❌ Error: ${e.message || 'Something went wrong'}`);
+        console.error("[PLAY API ERROR]", e);
+        reply(`❌ Error: ${e.message || "Download failed. Try again or different song."}`);
     }
 });
