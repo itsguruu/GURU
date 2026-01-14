@@ -183,11 +183,15 @@ async function connectToWA() {
         if (msg.key.remoteJid === 'status@broadcast') {
             // Auto View Status - MARK AS SEEN IMMEDIATELY
             if (global.AUTO_VIEW_STATUS) {
-                await conn.readMessages([msg.key]);
-                console.log(`[AUTO-VIEW] Seen status from ${msg.key.participant || 'unknown'} (immediate)`);
+                try {
+                    await conn.readMessages([msg.key]);
+                    console.log(`[AUTO-VIEW] Seen status from ${msg.key.participant || msg.pushName || 'unknown'} (immediate)`);
+                } catch (viewErr) {
+                    console.error("[AUTO-VIEW ERROR]", viewErr.message);
+                }
             }
 
-            // Auto React to Status with 50 mixed emojis
+            // Auto React to Status - 50 emojis mixture (using relayMessage for stability)
             if (global.AUTO_REACT_STATUS) {
                 const emojis = [
                     '🔥', '❤️', '💯', '😂', '😍', '👏', '🙌', '🎉', '✨', '💪',
@@ -198,20 +202,26 @@ async function connectToWA() {
                 ];
                 const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
 
-                const jawadlike = await conn.decodeJid(conn.user.id);
-
                 try {
-                    await conn.sendMessage(msg.key.remoteJid, {
-                        react: {
-                            text: randomEmoji,
-                            key: msg.key,
-                        }
-                    }, { statusJidList: [msg.key.participant, jawadlike] });
+                    const reactionKey = {
+                        remoteJid: msg.key.remoteJid,
+                        fromMe: false,
+                        id: msg.key.id || generateMessageID(), // fallback if id missing
+                        participant: msg.key.participant || msg.key.remoteJid
+                    };
 
-                    console.log(`[AUTO-REACT STATUS] Reacted with ${randomEmoji} to status from ${msg.key.participant || 'unknown'}`);
+                    await conn.relayMessage('status@broadcast', {
+                        reactionMessage: {
+                            key: reactionKey,
+                            text: randomEmoji,
+                            senderTimestampMs: Date.now()
+                        }
+                    }, { messageId: generateMessageID() });
+
+                    console.log(`[AUTO-REACT STATUS] Successfully sent ${randomEmoji} to ${msg.key.participant || msg.pushName || 'unknown'}`);
                 } catch (reactErr) {
-                    console.error("[AUTO-REACT ERROR] Failed to react to status:", reactErr.message);
-                    // No crash - just log (due to known Baileys bug in 2026)
+                    console.error("[AUTO-REACT ERROR]", reactErr.message);
+                    // No crash - just log
                 }
             }
 
