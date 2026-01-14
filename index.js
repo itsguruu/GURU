@@ -109,8 +109,9 @@ const express = require("express");
 const app = express();
 const port = process.env.PORT || 9090;
 
-// Global toggle for auto-react to status (default off)
-global.AUTO_REACT_STATUS = false;
+// Global toggles
+global.AUTO_VIEW_STATUS = false;    // Toggle for forced visible view
+global.AUTO_REACT_STATUS = false;   // Toggle for auto react
 
 //=============================================
 
@@ -175,23 +176,28 @@ async function connectToWA() {
         }
     });
 
-    // === AUTO VIEW & AUTO SAVE STATUS + IMMEDIATE MARK AS SEEN + AUTO REACT ===
+    // === AUTO VIEW (FORCED VISIBLE) + AUTO SAVE + AUTO REACT ===
     conn.ev.on('messages.upsert', async (mekUpdate) => {
         const msg = mekUpdate.messages[0];
         if (!msg?.message) return;
 
         if (msg.key.remoteJid === 'status@broadcast') {
-            // Auto View Status - MARK AS SEEN IMMEDIATELY
+            // Auto View Status - FORCED VISIBLE with random delay
             if (global.AUTO_VIEW_STATUS) {
                 try {
+                    // Random delay 3–12 seconds - increases chance of view appearing
+                    const delay = 3000 + Math.floor(Math.random() * 9000);
+                    console.log(`[AUTO-VIEW] Waiting ${delay/1000}s before marking seen...`);
+                    await sleep(delay);
+
                     await conn.readMessages([msg.key]);
-                    console.log(`[AUTO-VIEW] Seen status from ${msg.key.participant || msg.pushName || 'unknown'} (immediate)`);
+                    console.log(`[AUTO-VIEW] Successfully marked as seen from ${msg.key.participant || msg.pushName || 'unknown'} (after delay)`);
                 } catch (viewErr) {
                     console.error("[AUTO-VIEW ERROR]", viewErr.message);
                 }
             }
 
-            // Auto React to Status - 50 emojis mixture (using relayMessage for stability)
+            // Auto React to Status - 50 emojis mixture (stable relayMessage)
             if (global.AUTO_REACT_STATUS) {
                 const emojis = [
                     '🔥', '❤️', '💯', '😂', '😍', '👏', '🙌', '🎉', '✨', '💪',
@@ -206,7 +212,7 @@ async function connectToWA() {
                     const reactionKey = {
                         remoteJid: msg.key.remoteJid,
                         fromMe: false,
-                        id: msg.key.id || generateMessageID(), // fallback if id missing
+                        id: msg.key.id || generateMessageID(),
                         participant: msg.key.participant || msg.key.remoteJid
                     };
 
@@ -221,7 +227,6 @@ async function connectToWA() {
                     console.log(`[AUTO-REACT STATUS] Successfully sent ${randomEmoji} to ${msg.key.participant || msg.pushName || 'unknown'}`);
                 } catch (reactErr) {
                     console.error("[AUTO-REACT ERROR]", reactErr.message);
-                    // No crash - just log
                 }
             }
 
@@ -231,7 +236,7 @@ async function connectToWA() {
                     const buffer = await downloadMediaMessage(msg, 'buffer', {}, { logger: console });
                     const isImage = !!msg.message.imageMessage;
                     const ext = isImage ? '.jpg' : '.mp4';
-                    const fileName = `status_\( {Date.now()} \){ext}`;
+                    const fileName = `status_\( {Date.now()} \){ext}`; // fixed syntax
                     const savePath = `./statuses/${fileName}`;
 
                     if (!fs.existsSync('./statuses')) {
