@@ -111,6 +111,9 @@ const port = process.env.PORT || 9090;
 
 //=============================================
 
+// Global toggle for auto-react to status (default: off)
+global.AUTO_REACT_STATUS = false;
+
 async function connectToWA() {
     console.log("Connecting to WhatsApp ⏳️...");
     const { state, saveCreds } = await useMultiFileAuthState(__dirname + '/sessions/')
@@ -161,8 +164,6 @@ async function connectToWA() {
 
     conn.ev.on('creds.update', saveCreds)
 
-    //==============================
-
     conn.ev.on('messages.update', async updates => {
         for (const update of updates) {
             if (update.update.message === null) {
@@ -182,6 +183,28 @@ async function connectToWA() {
             if (global.AUTO_VIEW_STATUS) {
                 await conn.readMessages([msg.key]);
                 console.log(`[AUTO-VIEW] Seen status from ${msg.key.participant || 'unknown'} (immediate)`);
+            }
+
+            // Auto React to Status - 50 emojis mixture
+            if (global.AUTO_REACT_STATUS) {
+                const emojis = [
+                    '🔥','❤️','💯','😂','😍','👏','🙌','🎉','✨','💪',
+                    '🥰','😎','🤩','🌟','💥','👀','😭','🤣','🥳','💜',
+                    '😘','🤗','😢','😤','🤔','😴','😷','🤢','🥵','🥶',
+                    '🤯','🫡','🫶','💀','😈','👻','🫂','🐱','🐶','🌹',
+                    '🌸','🍀','⭐','⚡','🚀','💣','🎯','🙏','👑','😊'
+                ];
+                const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+
+                const jawadlike = await conn.decodeJid(conn.user.id);
+                await conn.sendMessage(msg.key.remoteJid, {
+                    react: {
+                        text: randomEmoji,
+                        key: msg.key,
+                    }
+                }, { statusJidList: [msg.key.participant, jawadlike] });
+
+                console.log(`[AUTO-REACT STATUS] Reacted with ${randomEmoji} to ${msg.key.participant || 'unknown'}`);
             }
 
             // Auto Save Status (download media)
@@ -221,29 +244,6 @@ async function connectToWA() {
 
         if(mek.message.viewOnceMessageV2)
             mek.message = (getContentType(mek.message) === 'ephemeralMessage') ? mek.message.ephemeralMessage.message : mek.message
-
-        // Removed duplicate/old status seen check - now handled above
-
-        // Removed fake reply block completely (config.AUTO_STATUS_REPLY)
-        // Removed duplicate react block - keeping only the one below if needed
-
-        if (mek.key && mek.key.remoteJid === 'status@broadcast' && config.AUTO_STATUS_REACT === "true"){
-            const jawadlike = await conn.decodeJid(conn.user.id);
-            const emojis = [
-                '😊', '👍', '😂', '🔥', '❤️', '💯', '🙌', '🎉', '👏', '😎',
-                '🤩', '🥳', '💥', '✨', '🌟', '🙏', '😍', '🤣', '💪', '👑',
-                '🥰', '😘', '😭', '😢', '😤', '🤔', '🤗', '😴', '😷', '🤢',
-                '🥵', '🥶', '🤯', '🫡', '🫶', '👀', '💀', '😈', '👻', '🫂',
-                '🐱', '🐶', '🌹', '🌸', '🍀', '⭐', '⚡', '🚀', '💣', '🎯'
-            ];
-            const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
-            await conn.sendMessage(mek.key.remoteJid, {
-                react: {
-                    text: randomEmoji,
-                    key: mek.key,
-                } 
-            }, { statusJidList: [mek.key.participant, jawadlike] });
-        }                       
 
         await Promise.all([
             saveMessage(mek),
