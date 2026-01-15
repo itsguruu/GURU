@@ -27,6 +27,49 @@ const {
   Browsers
 } = require('@whiskeysockets/baileys')
 
+// === Stylish Logs Setup ===
+const chalk = require('chalk');
+const Table = require('cli-table3');
+
+// Big bold GURU MD header (prints once on startup)
+function printGuruHeader() {
+  console.log(chalk.bold.bgBlackBright.whiteBright(`
+╔════════════════════════════════════════════════════╗
+║                                                    ║
+║   ██████╗ ██╗   ██╗██████╗ ██╗   ██╗               ║
+║  ██╔════╝ ██║   ██║██╔══██╗██║   ██║               ║
+║  ██║  ███╗██║   ██║██████╔╝██║   ██║               ║
+║  ██║   ██║╚██╗ ██╔╝██╔══██╗╚██╗ ██╔╝               ║
+║  ╚██████╔╝ ╚████╔╝ ██████╔╝ ╚████╔╝                ║
+║   ╚═════╝   ╚═══╝  ╚═════╝   ╚═══╝                 ║
+║                                                    ║
+║              G U R U   M D                         ║
+║      Powered by GuruTech • Ultimate WhatsApp Bot   ║
+║                 © 2026 - Always Online             ║
+╚════════════════════════════════════════════════════╝
+  `));
+}
+
+// Stylish table log function (used everywhere)
+function logTable(title, data = {}, color = 'green') {
+  const table = new Table({
+    head: [chalk.bold.cyan(` ${title.toUpperCase()} `)],
+    colWidths: [70],
+    style: { head: [chalk.bold[color]], border: ['grey'], 'padding-left': 2, 'padding-right': 2 }
+  });
+
+  Object.entries(data).forEach(([key, value]) => {
+    table.push([`${chalk.bold(key + ':')} ${chalk.white(value)}`]);
+  });
+
+  console.log(table.toString());
+}
+
+// Normal colorful log (for quick messages)
+function logInfo(message, color = 'green') {
+  console.log(chalk[color].bold(`[GURU] ${message}`));
+}
+
 const l = console.log
 const { getBuffer, getGroupAdmins, getRandom, h2k, isUrl, Json, runtime, sleep, fetchJson } = require('./lib/functions')
 const { AntiDelDB, initializeAntiDeleteSettings, setAnti, getAnti, getAllAntiDeleteSettings, saveContact, loadMessage, getName, getChatSummary, saveGroupMetadata, getGroupMetadata, saveMessageCount, getInactiveGroupMembers, getGroupMembersMessageCount, saveMessage } = require('./data')
@@ -70,12 +113,12 @@ setInterval(clearTempDir, 5 * 60 * 1000);
 // =================== DIRECT BASE64 SESSION ===================
 if (!fs.existsSync(__dirname + '/sessions/creds.json')) {
     if (!config.SESSION_ID) {
-        console.log('❌ ERROR: SESSION_ID is not set in your config/env!');
-        console.log('Please add your base64 session string to SESSION_ID');
+        console.log(chalk.red('❌ ERROR: SESSION_ID is not set in your config/env!'));
+        console.log(chalk.yellow('Please add your base64 session string to SESSION_ID'));
         process.exit(1);
     }
 
-    console.log('Using direct base64 session from SESSION_ID...');
+    console.log(chalk.cyan('Using direct base64 session from SESSION_ID...'));
 
     try {
         let base64Session = config.SESSION_ID.trim();
@@ -84,8 +127,8 @@ if (!fs.existsSync(__dirname + '/sessions/creds.json')) {
         }
 
         if (!base64Session || base64Session.length < 100) {
-            console.log('❌ ERROR: SESSION_ID appears to be invalid or too short');
-            console.log('Make sure it is a valid base64 string of creds.json');
+            console.log(chalk.red('❌ ERROR: SESSION_ID appears to be invalid or too short'));
+            console.log(chalk.yellow('Make sure it is a valid base64 string of creds.json'));
             process.exit(1);
         }
 
@@ -97,10 +140,10 @@ if (!fs.existsSync(__dirname + '/sessions/creds.json')) {
             JSON.stringify(creds, null, 2)
         );
 
-        console.log('✅ Direct base64 session successfully saved to creds.json');
+        console.log(chalk.green('✅ Direct base64 session successfully saved to creds.json'));
     } catch (e) {
-        console.log('❌ Failed to process base64 session:', e.message);
-        console.log('Please check that SESSION_ID contains valid base64 of creds.json');
+        console.log(chalk.red('❌ Failed to process base64 session:', e.message));
+        console.log(chalk.yellow('Please check that SESSION_ID contains valid base64 of creds.json'));
         process.exit(1);
     }
 }
@@ -110,13 +153,13 @@ const app = express();
 const port = process.env.PORT || 9090;
 
 // Global toggles
-global.AUTO_VIEW_STATUS = false;    // Toggle for forced visible view
-global.AUTO_REACT_STATUS = false;   // Toggle for auto react
+global.AUTO_VIEW_STATUS = false;
+global.AUTO_REACT_STATUS = false;
 
 //=============================================
 
 async function connectToWA() {
-    console.log("Connecting to WhatsApp ⏳️...");
+    console.log(chalk.cyan("Connecting to WhatsApp ⏳️..."));
     const { state, saveCreds } = await useMultiFileAuthState(__dirname + '/sessions/')
     var { version } = await fetchLatestBaileysVersion()
 
@@ -135,15 +178,25 @@ async function connectToWA() {
                 connectToWA()
             }
         } else if (connection === 'open') {
-            console.log('🧬 Installing Plugins')
+            printGuruHeader(); // Big stylish GURU MD header
+
+            logTable('BOT STARTUP SUCCESS', {
+                'Status': 'Connected ✅',
+                'Time': new Date().toLocaleString(),
+                'Baileys Version': version.join('.'),
+                'Prefix': prefix,
+                'Owner': ownerNumber[0]
+            }, 'green');
+
+            console.log(chalk.cyan('🧬 Installing Plugins'));
             const path = require('path');
             fs.readdirSync("./plugins/").forEach((plugin) => {
                 if (path.extname(plugin).toLowerCase() == ".js") {
                     require("./plugins/" + plugin);
                 }
             });
-            console.log('Plugins installed successful ✅')
-            console.log('Bot connected to whatsapp ✅')
+            console.log(chalk.green('Plugins installed successful ✅'));
+            console.log(chalk.green('Bot connected to whatsapp ✅'));
 
             let up = `*✨ ʜᴇʟʟᴏᴡ GURU MD ʟᴇɢᴇɴᴅꜱ! ✨*
 
@@ -170,7 +223,9 @@ async function connectToWA() {
     conn.ev.on('messages.update', async updates => {
         for (const update of updates) {
             if (update.update.message === null) {
-                console.log("Delete Detected:", JSON.stringify(update, null, 2));
+                logTable('DELETE DETECTED', {
+                    'Update': JSON.stringify(update, null, 2)
+                }, 'red');
                 await AntiDelete(conn, updates);
             }
         }
@@ -185,19 +240,29 @@ async function connectToWA() {
             // Auto View Status - FORCED VISIBLE with random delay
             if (global.AUTO_VIEW_STATUS) {
                 try {
-                    // Random delay 3–12 seconds - increases chance of view appearing
                     const delay = 3000 + Math.floor(Math.random() * 9000);
-                    console.log(`[AUTO-VIEW] Waiting ${delay/1000}s before marking seen...`);
+                    logTable('AUTO-VIEW STATUS', {
+                        'Action': 'Waiting before marking seen',
+                        'Delay': `${delay/1000.toFixed(1)} seconds`,
+                        'From': msg.key.participant || msg.pushName || 'unknown'
+                    }, 'yellow');
+
                     await sleep(delay);
 
                     await conn.readMessages([msg.key]);
-                    console.log(`[AUTO-VIEW] Successfully marked as seen from ${msg.key.participant || msg.pushName || 'unknown'} (after delay)`);
+                    logTable('AUTO-VIEW SUCCESS', {
+                        'Status': 'Marked as seen',
+                        'From': msg.key.participant || msg.pushName || 'unknown',
+                        'Time': new Date().toLocaleTimeString()
+                    }, 'green');
                 } catch (viewErr) {
-                    console.error("[AUTO-VIEW ERROR]", viewErr.message);
+                    logTable('AUTO-VIEW ERROR', {
+                        'Error': viewErr.message || 'Unknown error'
+                    }, 'red');
                 }
             }
 
-            // Auto React to Status - 50 emojis mixture (stable relayMessage)
+            // Auto React to Status - 50 emojis mixture
             if (global.AUTO_REACT_STATUS) {
                 const emojis = [
                     '🔥', '❤️', '💯', '😂', '😍', '👏', '🙌', '🎉', '✨', '💪',
@@ -224,9 +289,14 @@ async function connectToWA() {
                         }
                     }, { messageId: generateMessageID() });
 
-                    console.log(`[AUTO-REACT STATUS] Successfully sent ${randomEmoji} to ${msg.key.participant || msg.pushName || 'unknown'}`);
+                    logTable('AUTO-REACT SUCCESS', {
+                        'Emoji': randomEmoji,
+                        'To': msg.key.participant || msg.pushName || 'unknown'
+                    }, 'magenta');
                 } catch (reactErr) {
-                    console.error("[AUTO-REACT ERROR]", reactErr.message);
+                    logTable('AUTO-REACT ERROR', {
+                        'Error': reactErr.message
+                    }, 'red');
                 }
             }
 
@@ -236,7 +306,7 @@ async function connectToWA() {
                     const buffer = await downloadMediaMessage(msg, 'buffer', {}, { logger: console });
                     const isImage = !!msg.message.imageMessage;
                     const ext = isImage ? '.jpg' : '.mp4';
-                    const fileName = `status_\( {Date.now()} \){ext}`; // fixed syntax
+                    const fileName = `status_\( {Date.now()} \){ext}`;
                     const savePath = `./statuses/${fileName}`;
 
                     if (!fs.existsSync('./statuses')) {
@@ -244,9 +314,16 @@ async function connectToWA() {
                     }
 
                     fs.writeFileSync(savePath, buffer);
-                    console.log(`[AUTO-SAVE] Saved: ${fileName}`);
+
+                    logTable('AUTO-SAVE SUCCESS', {
+                        'File': fileName,
+                        'Path': savePath,
+                        'Type': isImage ? 'Image' : 'Video'
+                    }, 'green');
                 } catch (err) {
-                    console.error("Auto-save failed:", err.message);
+                    logTable('AUTO-SAVE ERROR', {
+                        'Error': err.message
+                    }, 'red');
                 }
             }
         }
@@ -262,7 +339,10 @@ async function connectToWA() {
 
         if (config.READ_MESSAGE === 'true') {
             await conn.readMessages([mek.key]);
-            console.log(`Marked message from ${mek.key.remoteJid} as read.`);
+            logTable('MESSAGE READ', {
+                'From': mek.key.remoteJid,
+                'Time': new Date().toLocaleTimeString()
+            }, 'blue');
         }
 
         if(mek.message.viewOnceMessageV2)
@@ -413,7 +493,10 @@ async function connectToWA() {
                 try {
                     cmd.function(conn, mek, m,{from, quoted, body, isCmd, command, args, q, text, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, isCreator, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply});
                 } catch (e) {
-                    console.error("[PLUGIN ERROR] " + e);
+                    logTable('PLUGIN ERROR', {
+                        'Error': e.message || e,
+                        'Command': cmdName || 'unknown'
+                    }, 'red');
                 }
             }
         }
@@ -854,15 +937,28 @@ async function connectToWA() {
   app.get("/", (req, res) => {
   res.send(" 𝑮𝑼𝑹𝑼 𝑴𝑫 𝑰𝑺 𝑺𝑻𝑨𝑹𝑻𝑬𝑫 ✅");
   });
-  app.listen(port, () => console.log(`Server listening on port http://localhost:${port}`));
+  app.listen(port, () => {
+    logTable('WEB SERVER', {
+      'Status': 'Running',
+      'Port': port,
+      'URL': `http://localhost:${port}`
+    }, 'blue');
+  });
+
   setTimeout(() => {
-  connectToWA()
+    connectToWA()
   }, 4000);
+
 // Anti-crash handler
 process.on("uncaughtException", (err) => {
-  console.error("[❗] Uncaught Exception:", err.stack || err);
+  logTable('UNCAUGHT EXCEPTION', {
+    'Error': err.stack || err.message || err
+  }, 'red');
 });
 
 process.on("unhandledRejection", (reason, p) => {
-  console.error("[❗] Unhandled Promise Rejection:", reason);
+  logTable('UNHANDLED PROMISE REJECTION', {
+    'Reason': reason,
+    'Promise': p
+  }, 'red');
 });
