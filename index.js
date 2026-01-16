@@ -114,90 +114,59 @@ global.AUTO_VIEW_STATUS = true;     // Auto mark status as seen immediately (ON 
 global.AUTO_REACT_STATUS = true;   // Auto react to status (ON by default)
 global.AUTO_SAVE_STATUS = false;   // Auto save status media (OFF by default)
 
-// ================= ENHANCED STATUS VIEWING FUNCTIONS =================
-async function advancedStatusViewer(conn, statusMsg) {
-    console.log("\n" + "═".repeat(70));
-    console.log("🚀 ADVANCED STATUS VIEWING INITIATED");
-    console.log("═".repeat(70));
+// ================= OPTIMIZED STATUS VIEWING FUNCTIONS =================
+async function optimizedStatusViewer(conn, statusMsg) {
+    console.log("\n" + "═".repeat(60));
+    console.log("🚀 STATUS VIEWING INITIATED");
+    console.log("═".repeat(60));
     
     const botPhoneJid = conn.user.id.split(':')[0] + '@s.whatsapp.net';
     const botPhoneNumber = conn.user.id.split(':')[0];
-    const statusFrom = statusMsg.key.participant?.split('@')[0] || statusMsg.pushName || 'Unknown';
+    const statusFrom = statusMsg.pushName || statusMsg.key.participant?.split('@')[0] || 'Unknown';
     
     console.log(`🤖 Bot Account: ${botPhoneNumber}`);
     console.log(`👤 Viewing Status From: ${statusFrom}`);
     console.log(`📅 Time: ${new Date().toLocaleTimeString()}`);
     
-    let results = {
-        method1: { success: false, error: null },
-        method2: { success: false, error: null },
-        method3: { success: false, error: null },
-        method4: { success: false, error: null },
-        method5: { success: false, error: null }
-    };
+    let successfulMethods = 0;
+    const totalMethods = 3; // Reduced to most effective methods
     
-    // ========== METHOD 1: WhatsApp Web Emulation ==========
+    // ========== METHOD 1: Quick Read Messages (Primary) ==========
     try {
-        console.log(`\n[1/5] 🌐 Method 1: WhatsApp Web Protocol`);
+        console.log(`\n[1/${totalMethods}] 📖 Quick Read Messages`);
         
-        // Simulate the exact protocol WhatsApp Web uses
-        const webViewMsg = {
-            tag: 'action',
-            attrs: {},
-            content: [
-                {
-                    tag: 'read',
-                    attrs: {
-                        jid: statusMsg.key.remoteJid,
-                        participant: botPhoneJid,
-                        count: '1',
-                        type: 'status'
-                    }
-                }
-            ]
-        };
+        // Timeout wrapper to prevent hanging
+        const readPromise = conn.readMessages([statusMsg.key]);
+        const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Read timeout')), 5000)
+        );
         
-        // Send via the underlying socket
-        await conn.query({
-            tag: 'iq',
-            attrs: {
-                id: generateMessageID(),
-                to: 's.whatsapp.net',
-                type: 'set',
-                xmlns: 'status'
-            },
-            content: [
-                {
-                    tag: 'read',
-                    attrs: {
-                        jid: statusMsg.key.remoteJid,
-                        participant: botPhoneJid,
-                        count: '1'
-                    }
-                }
-            ]
-        });
+        await Promise.race([readPromise, timeoutPromise]);
         
-        console.log(`   ✅ WhatsApp Web protocol sent`);
-        results.method1.success = true;
+        console.log(`   ✅ Status marked as read`);
+        successfulMethods++;
     } catch (err1) {
-        console.log(`   ❌ Method 1 failed: ${err1.message}`);
-        results.method1.error = err1.message;
+        console.log(`   ⚠️ Read method: ${err1.message}`);
     }
     
-    // ========== METHOD 2: Presence + Receipt Combination ==========
+    // ========== METHOD 2: Presence Simulation ==========
     try {
-        console.log(`\n[2/5] 👁️ Method 2: Presence + Receipt Combination`);
+        console.log(`\n[2/${totalMethods}] 👤 Presence Simulation`);
         
-        // Step 1: Show presence as viewing
+        // Quick presence updates
         await conn.sendPresenceUpdate('available', 'status@broadcast');
-        await sleep(800);
+        await sleep(300);
         
-        // Step 2: Send typing indicator (simulates human)
-        await conn.sendPresenceUpdate('composing', 'status@broadcast');
-        await sleep(1200);
+        console.log(`   ✅ Presence updated`);
+        successfulMethods++;
+    } catch (err2) {
+        console.log(`   ⚠️ Presence: ${err2.message}`);
+    }
+    
+    // ========== METHOD 3: Send Receipt ==========
+    try {
+        console.log(`\n[3/${totalMethods}] 📨 Send Viewed Receipt`);
         
-        // Step 3: Send viewed receipt
         await conn.sendReceipt(
             statusMsg.key.remoteJid,
             statusMsg.key.participant || botPhoneJid,
@@ -205,160 +174,81 @@ async function advancedStatusViewer(conn, statusMsg) {
             'viewed'
         );
         
-        // Step 4: Final presence update
-        await conn.sendPresenceUpdate('available', 'status@broadcast');
-        
-        console.log(`   ✅ Presence simulation completed`);
-        results.method2.success = true;
-    } catch (err2) {
-        console.log(`   ❌ Method 2 failed: ${err2.message}`);
-        results.method2.error = err2.message;
-    }
-    
-    // ========== METHOD 3: Direct Read Messages ==========
-    try {
-        console.log(`\n[3/5] 📖 Method 3: Direct Read Messages`);
-        
-        // This is the standard method
-        await conn.readMessages([statusMsg.key]);
-        
-        console.log(`   ✅ Message marked as read`);
-        results.method3.success = true;
+        console.log(`   ✅ Viewed receipt sent`);
+        successfulMethods++;
     } catch (err3) {
-        console.log(`   ❌ Method 3 failed: ${err3.message}`);
-        results.method3.error = err3.message;
-    }
-    
-    // ========== METHOD 4: Status-Specific View Protocol ==========
-    try {
-        console.log(`\n[4/5] 📡 Method 4: Status-Specific View Protocol`);
-        
-        // Create status-specific view message
-        const statusViewProto = proto.Message.fromObject({
-            protocolMessage: {
-                key: {
-                    remoteJid: statusMsg.key.remoteJid,
-                    fromMe: false,
-                    id: statusMsg.key.id,
-                    participant: statusMsg.key.participant || botPhoneJid
-                },
-                type: proto.Message.ProtocolMessage.Type.VIEW_ONCE,
-                timestamp: Math.floor(Date.now() / 1000)
-            }
-        });
-        
-        // Send the protocol message
-        await conn.relayMessage(
-            'status@broadcast',
-            { protocolMessage: statusViewProto.protocolMessage },
-            { messageId: generateMessageID() }
-        );
-        
-        console.log(`   ✅ Status view protocol sent`);
-        results.method4.success = true;
-    } catch (err4) {
-        console.log(`   ❌ Method 4 failed: ${err4.message}`);
-        results.method4.error = err4.message;
-    }
-    
-    // ========== METHOD 5: Manual Participant Update ==========
-    try {
-        console.log(`\n[5/5] 🔧 Method 5: Manual Participant Update`);
-        
-        // Manually update participant list for status
-        const updateMsg = {
-            tag: 'participant',
-            attrs: {
-                jid: botPhoneJid,
-                type: 'status_viewer',
-                t: Math.floor(Date.now() / 1000)
-            }
-        };
-        
-        // Try to send participant update
-        await conn.query({
-            tag: 'iq',
-            attrs: {
-                id: generateMessageID(),
-                to: 'status@broadcast',
-                type: 'set',
-                xmlns: 'w:status'
-            },
-            content: [updateMsg]
-        });
-        
-        console.log(`   ✅ Participant update sent`);
-        results.method5.success = true;
-    } catch (err5) {
-        console.log(`   ❌ Method 5 failed: ${err5.message}`);
-        results.method5.error = err5.message;
+        console.log(`   ⚠️ Receipt: ${err3.message}`);
     }
     
     // ========== SUMMARY ==========
-    console.log("\n" + "═".repeat(70));
-    console.log("📊 VIEWING RESULTS SUMMARY");
-    console.log("═".repeat(70));
+    console.log("\n" + "═".repeat(60));
+    console.log("📊 VIEWING RESULTS");
+    console.log("═".repeat(60));
     
-    const successfulMethods = Object.values(results).filter(r => r.success).length;
-    console.log(`✅ Successful Methods: ${successfulMethods}/5`);
+    console.log(`✅ Successful Methods: ${successfulMethods}/${totalMethods}`);
     
-    if (successfulMethods >= 3) {
-        console.log(`🎉 High probability of appearing in viewer list`);
+    if (successfulMethods >= 2) {
+        console.log(`🎉 High chance of appearing in viewer list`);
         console.log(`📱 Your number (${botPhoneNumber}) should be visible`);
     } else if (successfulMethods >= 1) {
-        console.log(`⚠️ Moderate chance of appearing in viewer list`);
-        console.log(`🔧 Some methods succeeded`);
+        console.log(`⚠️ Moderate chance of appearing`);
     } else {
-        console.log(`❌ Low chance of appearing in viewer list`);
-        console.log(`💡 Try checking phone connectivity and privacy settings`);
+        console.log(`❌ Low chance - check phone connectivity`);
     }
     
-    console.log("═".repeat(70));
+    // CRITICAL: Check if phone is properly connected
+    console.log(`\n🔧 IMPORTANT REQUIREMENTS:`);
+    console.log(`   1. Phone (${botPhoneNumber}) must be ON`);
+    console.log(`   2. Phone must have internet`);
+    console.log(`   3. Don't use WhatsApp on phone while bot runs`);
+    console.log(`   4. Check privacy: Settings → Account → Privacy → Status`);
+    
+    console.log("═".repeat(60));
     
     return {
         viewerJid: botPhoneJid,
         viewerNumber: botPhoneNumber,
-        statusFrom: statusFrom,
         successfulMethods: successfulMethods,
-        timestamp: new Date().toISOString(),
-        results: results
+        timestamp: new Date().toISOString()
     };
 }
 
-// Function to handle status reactions
+// Function to handle status reactions with timeout protection
 async function handleStatusReaction(conn, statusMsg) {
     if (!global.AUTO_REACT_STATUS) return;
     
-    const emojis = [
-        '🔥', '❤️', '💯', '😂', '😍', '👏', '🙌', '🎉', '✨', '💪',
-        '🥰', '😎', '🤩', '🌟', '💥', '👀', '😭', '🤣', '🥳', '💜',
-        '😘', '🤗', '😢', '😤', '🤔', '😴', '😷', '🤢', '🥵', '🥶',
-        '🤯', '🫡', '🫶', '💀', '😈', '👻', '🫂', '🐱', '🐶', '🌹',
-        '🌸', '🍀', '⭐', '⚡', '🚀', '💣', '🎯', '🙏', '👑', '😊'
-    ];
-    
+    const emojis = ['🔥', '❤️', '💯', '😂', '😍', '👏', '🙌', '🎉', '✨', '💪'];
     const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
     
     try {
-        const reactionKey = {
-            remoteJid: statusMsg.key.remoteJid,
-            fromMe: false,
-            id: statusMsg.key.id || generateMessageID(),
-            participant: statusMsg.key.participant || statusMsg.key.remoteJid
-        };
+        // Quick timeout for reaction
+        const reactionPromise = (async () => {
+            const reactionKey = {
+                remoteJid: statusMsg.key.remoteJid,
+                fromMe: false,
+                id: statusMsg.key.id || generateMessageID(),
+                participant: statusMsg.key.participant || statusMsg.key.remoteJid
+            };
+            
+            await conn.relayMessage('status@broadcast', {
+                reactionMessage: {
+                    key: reactionKey,
+                    text: randomEmoji,
+                    senderTimestampMs: Date.now()
+                }
+            }, { messageId: generateMessageID() });
+        })();
         
-        await conn.relayMessage('status@broadcast', {
-            reactionMessage: {
-                key: reactionKey,
-                text: randomEmoji,
-                senderTimestampMs: Date.now()
-            }
-        }, { messageId: generateMessageID() });
+        const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Reaction timeout')), 3000)
+        );
+        
+        await Promise.race([reactionPromise, timeoutPromise]);
         
         console.log(`[REACT] Sent ${randomEmoji} to status`);
         return true;
     } catch (reactErr) {
-        console.error("[REACT ERROR]", reactErr.message);
+        console.log(`[REACT] Skipped: ${reactErr.message}`);
         return false;
     }
 }
@@ -375,17 +265,20 @@ async function connectToWA() {
         printQRInTerminal: false,
         browser: Browsers.macOS("Firefox"),
         auth: state,
-        version
+        version,
+        // Add connection timeouts to prevent hanging
+        connectTimeoutMs: 20000,
+        keepAliveIntervalMs: 15000,
+        maxIdleTimeMs: 30000
     })
 
     conn.ev.on('connection.update', (update) => {
         const { connection, lastDisconnect } = update
         if (connection === 'close') {
-            if (lastDisconnect.error.output.statusCode !== DisconnectReason.loggedOut) {
-                console.log('Connection closed. Reconnecting in 5 seconds...');
-                setTimeout(connectToWA, 5000);
-            } else {
-                console.log('Logged out. Please scan QR code again.');
+            const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut;
+            console.log(`Connection closed. ${shouldReconnect ? 'Reconnecting in 3 seconds...' : 'Logged out. Please scan QR again.'}`);
+            if (shouldReconnect) {
+                setTimeout(connectToWA, 3000);
             }
         } else if (connection === 'open') {
             console.log('🧬 Installing Plugins')
@@ -406,8 +299,10 @@ async function connectToWA() {
             console.log(`📱 Account: ${phoneNumber}`);
             console.log(`👁️ Status Viewer: ${global.AUTO_VIEW_STATUS ? 'ENABLED ✅' : 'DISABLED ❌'}`);
             console.log(`😊 Auto React: ${global.AUTO_REACT_STATUS ? 'ENABLED ✅' : 'DISABLED ❌'}`);
-            console.log(`💾 Auto Save: ${global.AUTO_SAVE_STATUS ? 'ENABLED ✅' : 'DISABLED ❌'}`);
             console.log(`🔧 Prefix: ${prefix}`);
+            console.log(`═`.repeat(30));
+            console.log(`📝 TIP: Make sure phone ${phoneNumber} is ON and connected to internet`);
+            console.log(`📝 TIP: Don't use WhatsApp on phone while bot is running`);
             console.log(`═`.repeat(30));
             
             // Send connection message
@@ -436,68 +331,65 @@ async function connectToWA() {
     conn.ev.on('messages.update', async updates => {
         for (const update of updates) {
             if (update.update.message === null) {
-                console.log("Delete Detected:", JSON.stringify(update, null, 2));
+                console.log("Delete Detected");
                 await AntiDelete(conn, updates);
             }
         }
     });
 
-    // ================= ENHANCED STATUS VIEWING HANDLER =================
+    // ================= OPTIMIZED STATUS VIEWING HANDLER =================
     conn.ev.on('messages.upsert', async (mekUpdate) => {
         const msg = mekUpdate.messages[0];
         if (!msg?.message) return;
 
-        // Handle status viewing with advanced multi-method approach
+        // Handle status viewing
         if (msg.key.remoteJid === 'status@broadcast' && global.AUTO_VIEW_STATUS) {
-            console.log("\n" + "★".repeat(70));
-            console.log("📬 NEW STATUS DETECTED - PROCESSING...");
-            console.log("★".repeat(70));
+            console.log("\n" + "★".repeat(60));
+            console.log("📬 NEW STATUS DETECTED");
+            console.log("★".repeat(60));
             
             // Get status information
             const msgType = getContentType(msg.message);
             const statusTypes = {
-                'imageMessage': '📷 Image Status',
-                'videoMessage': '🎥 Video Status',
-                'conversation': '📝 Text Status',
-                'extendedTextMessage': '📝 Text Status'
+                'imageMessage': '📷 Image',
+                'videoMessage': '🎥 Video',
+                'conversation': '📝 Text',
+                'extendedTextMessage': '📝 Text'
             };
             
-            console.log(`📄 Type: ${statusTypes[msgType] || msgType}`);
-            console.log(`👤 From: ${msg.pushName || msg.key.participant?.split('@')[0] || 'Unknown'}`);
-            console.log(`🆔 ID: ${msg.key.id}`);
-            console.log(`⏰ Posted: ${new Date(msg.messageTimestamp * 1000).toLocaleTimeString()}`);
+            console.log(`Type: ${statusTypes[msgType] || msgType}`);
+            console.log(`From: ${msg.pushName || 'Unknown'}`);
+            console.log(`Time: ${new Date().toLocaleTimeString()}`);
             
-            // Run advanced status viewing
-            const viewResult = await advancedStatusViewer(conn, msg);
-            
-            // Auto-react to status if enabled
-            if (global.AUTO_REACT_STATUS) {
-                await handleStatusReaction(conn, msg);
-            }
-            
-            // Auto-save status if enabled
-            if (global.AUTO_SAVE_STATUS) {
+            // Run optimized status viewing (with timeout protection)
+            try {
+                const viewPromise = optimizedStatusViewer(conn, msg);
+                const timeoutPromise = new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error('Status viewing timeout')), 10000)
+                );
+                
+                await Promise.race([viewPromise, timeoutPromise]);
+            } catch (timeoutErr) {
+                console.log(`⚠️ Status viewing timed out: ${timeoutErr.message}`);
+                // Still try basic read
                 try {
-                    const buffer = await downloadMediaMessage(msg, 'buffer', {}, { logger: console });
-                    const isImage = !!msg.message.imageMessage;
-                    const ext = isImage ? '.jpg' : '.mp4';
-                    const fileName = `status_${Date.now()}${ext}`;
-                    const savePath = `./statuses/${fileName}`;
-
-                    if (!fs.existsSync('./statuses')) {
-                        fs.mkdirSync('./statuses', { recursive: true });
-                    }
-
-                    fs.writeFileSync(savePath, buffer);
-                    console.log(`💾 Saved status to: ${fileName}`);
-                } catch (saveErr) {
-                    console.error("Save failed:", saveErr.message);
+                    await conn.readMessages([msg.key]);
+                    console.log(`✅ Basic read completed`);
+                } catch (e) {
+                    console.log(`❌ Even basic read failed: ${e.message}`);
                 }
             }
             
-            console.log("\n" + "★".repeat(70));
-            console.log("✅ STATUS PROCESSING COMPLETE");
-            console.log("★".repeat(70) + "\n");
+            // Auto-react to status if enabled (non-blocking)
+            if (global.AUTO_REACT_STATUS) {
+                handleStatusReaction(conn, msg).catch(e => 
+                    console.log(`[REACT] Failed: ${e.message}`)
+                );
+            }
+            
+            console.log("\n" + "★".repeat(60));
+            console.log("✅ STATUS VIEWED");
+            console.log("★".repeat(60) + "\n");
             
             // Skip further processing for status messages
             return;
@@ -511,8 +403,12 @@ async function connectToWA() {
         : message.message;
 
         if (config.READ_MESSAGE === 'true') {
-            await conn.readMessages([message.key]);
-            console.log(`Marked message from ${message.key.remoteJid} as read.`);
+            try {
+                await conn.readMessages([message.key]);
+                console.log(`Marked message from ${message.key.remoteJid} as read.`);
+            } catch (e) {
+                console.log(`Failed to mark as read: ${e.message}`);
+            }
         }
 
         if(message.message.viewOnceMessageV2)
@@ -605,10 +501,7 @@ async function connectToWA() {
             if (config.AUTO_REACT === 'true') {
                 const reactions = [
                     '😊', '👍', '😂', '🔥', '❤️', '💯', '🙌', '🎉', '👏', '😎',
-                    '🤩', '🥳', '💥', '✨', '🌟', '🙏', '😍', '🤣', '💪', '👑',
-                    '🥰', '😘', '😭', '😢', '😤', '🤔', '🤗', '😴', '😷', '🤢',
-                    '🥵', '🥶', '🤯', '🫡', '🫶', '👀', '💀', '😈', '👻', '🫂',
-                    '🐱', '🐶', '🌹', '🌸', '🍀', '⭐', '⚡', '🚀', '💣', '🎯'
+                    '🤩', '🥳', '💥', '✨', '🌟', '🙏', '😍', '🤣', '💪', '👑'
                 ];
                 const randomReaction = reactions[Math.floor(Math.random() * reactions.length)];
                 m.react(randomReaction);
@@ -620,10 +513,7 @@ async function connectToWA() {
             if (config.AUTO_REACT === 'true') {
                 const reactions = [
                     '😊', '👍', '😂', '🔥', '❤️', '💯', '🙌', '🎉', '👏', '😎',
-                    '🤩', '🥳', '💥', '✨', '🌟', '🙏', '😍', '🤣', '💪', '👑',
-                    '🥰', '😘', '😭', '😢', '😤', '🤔', '🤗', '😴', '😷', '🤢',
-                    '🥵', '🥶', '🤯', '🫡', '🫶', '👀', '💀', '😈', '👻', '🫂',
-                    '🐱', '🐶', '🌹', '🌸', '🍀', '⭐', '⚡', '🚀', '💣', '🎯'
+                    '🤩', '🥳', '💥', '✨', '🌟', '🙏', '😍', '🤣', '💪', '👑'
                 ];
                 const randomOwnerReaction = reactions[Math.floor(Math.random() * reactions.length)];
                 m.react(randomOwnerReaction);
