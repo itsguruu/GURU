@@ -53,10 +53,10 @@ cmd({
     const lastUpdate = fs.statSync(localVersionPath).mtime.toLocaleString();
 
     // GitHub stats
-    const githubRepo = 'https://github.com/Obedweb/Hunter-Xmd1';
+    const githubRepo = 'https://github.com/itsguruu/GURUH';
 
     // Check update status
-    let updateMessage = `✅ Your ʜᴜɴᴛᴇʀ xᴍᴅ bot is up-to-date!`;
+    let updateMessage = `✅ Your GURU MD bot is up-to-date!`;
     if (localVersion !== latestVersion) {
       updateMessage = `🚀 Your ʜᴜɴᴛᴇʀ xᴍᴅ bot is outdated!
 🔹 *Current Version:* ${localVersion}
@@ -80,8 +80,8 @@ Use *.update* to update.`;
                     forwardingScore: 999,
                     isForwarded: true,
                     forwardedNewsletterMessageInfo: {
-                        newsletterJid: '120363416335506023@newsletter',
-                        newsletterName: 'ʜᴜɴᴛᴇʀ xᴍᴅ',
+                        newsletterJid: '120363421164015033@newsletter',
+                        newsletterName: 'GURU MD',
                         serverMessageId: 143
         }
       }
