@@ -8,62 +8,81 @@ const { setCommitHash, getCommitHash } = require('../data/updateDB');
 cmd({
     pattern: "update",
     alias: ["upgrade", "sync"],
-    react: '🆕',
-    desc: "Update the bot to the latest version.",
+    react: '🆙',
+    desc: "Update the bot to the latest version from your repo with version check.",
     category: "misc",
     filename: __filename
 }, async (client, message, args, { reply, isOwner }) => {
     if (!isOwner) return reply("This command is only for the bot owner.");
 
     try {
-        await reply("🔍 Checking for BOTGURU-MD updates...");
+        await reply("🔍 Checking for GURU-MD updates...");
 
-        // Fetch the latest commit hash from GitHub
-        const { data: commitData } = await axios.get("https://api.github.com/repos/criss-vevo/CRISS-AI/commits/main");
+        // Fetch latest commit hash
+        const { data: commitData } = await axios.get("https://api.github.com/repos/itsguruu/GURUH/commits/main");
         const latestCommitHash = commitData.sha;
 
-        // Get the stored commit hash from the database
         const currentHash = await getCommitHash();
 
-        if (latestCommitHash === currentHash) {
-            return reply("✅ Your BOTGURU-MD bot is already up-to-date!");
+        // Fetch remote version from package.json on GitHub
+        const { data: remotePkg } = await axios.get("https://raw.githubusercontent.com/itsguruu/GURUH/main/package.json");
+        const remoteVersion = JSON.parse(remotePkg).version || "unknown";
+
+        // Get local version from package.json
+        let localVersion = "unknown";
+        const localPkgPath = path.join(__dirname, '..', 'package.json');
+        if (fs.existsSync(localPkgPath)) {
+            const localPkg = JSON.parse(fs.readFileSync(localPkgPath, 'utf8'));
+            localVersion = localPkg.version || "unknown";
         }
 
-        await reply("🚀 Updating CRISS-AI Bot...");
+        await reply(`Current version: ${localVersion} | Latest on repo: ${remoteVersion}`);
 
-        // Download the latest code
+        if (latestCommitHash === currentHash) {
+            return reply("✅ Your GURU-MD is already on the latest commit (no new changes).");
+        }
+
+        // Optional: simple version comparison (you can improve with semver lib if needed)
+        if (localVersion !== "unknown" && remoteVersion !== "unknown" && localVersion === remoteVersion) {
+            return reply("✅ Versions match, but new commit detected. Updating anyway...");
+        }
+
+        await reply(`🚀 Updating GURU-MD to version ${remoteVersion} from https://github.com/itsguruu/GURUH ...`);
+
+        // Download ZIP
         const zipPath = path.join(__dirname, "latest.zip");
-        const { data: zipData } = await axios.get("https://github.com/criss-vevo/CRISS-AI/archive/main.zip", { responseType: "arraybuffer" });
+        const { data: zipData } = await axios.get("https://github.com/itsguruu/GURUH/archive/main.zip", { responseType: "arraybuffer" });
         fs.writeFileSync(zipPath, zipData);
 
-        // Extract ZIP file
-        await reply("📦 Extracting the latest code...");
+        // Extract
+        await reply("📦 Extracting latest code...");
         const extractPath = path.join(__dirname, 'latest');
         const zip = new AdmZip(zipPath);
         zip.extractAllTo(extractPath, true);
 
-        // Copy updated files, preserving config.js and app.json
-        await reply("🔄 Replacing files...");
-        const sourcePath = path.join(extractPath, "CRISS-AI-main");
+        // Copy files, skip config & app.json
+        await reply("🔄 Applying updates (preserving your config.js & app.json)...");
+        const sourcePath = path.join(extractPath, "GURUH-main");
         const destinationPath = path.join(__dirname, '..');
         copyFolderSync(sourcePath, destinationPath);
 
-        // Save the latest commit hash to the database
+        // Update commit hash
         await setCommitHash(latestCommitHash);
 
         // Cleanup
         fs.unlinkSync(zipPath);
         fs.rmSync(extractPath, { recursive: true, force: true });
 
-        await reply("✅ Update complete! Restarting the bot...");
+        await reply(`✅ Update to version ${remoteVersion} complete! Restarting the bot...`);
         process.exit(0);
+
     } catch (error) {
-        console.error("Update error:", error);
-        return reply("❌ Update failed. Please try manually.");
+        console.error("Update error:", error.message);
+        return reply(`❌ Update failed: ${error.message || "Unknown error"}. Try manual pull.`);
     }
 });
 
-// Helper function to copy directories while preserving config.js and app.json
+// Same copy helper as before
 function copyFolderSync(source, target) {
     if (!fs.existsSync(target)) {
         fs.mkdirSync(target, { recursive: true });
@@ -74,9 +93,8 @@ function copyFolderSync(source, target) {
         const srcPath = path.join(source, item);
         const destPath = path.join(target, item);
 
-        // Skip config.js and app.json
         if (item === "config.js" || item === "app.json") {
-            console.log(`Skipping ${item} to preserve custom settings.`);
+            console.log(`Skipping ${item} to preserve your custom settings.`);
             continue;
         }
 
