@@ -31,10 +31,7 @@ const {
 const chalk = require('chalk');
 const Table = require('cli-table3');
 
-// Big bold GURU MD header (prints once on startup) - commented out as per your earlier request
-// function printGuruHeader() { ... }
-
-// logTable function - THIS WAS MISSING in your deployed code
+// logTable function
 function logTable(title, data = {}, color = 'green') {
   const table = new Table({
     head: [chalk.bold.cyan(` ${title.toUpperCase()} `)],
@@ -162,8 +159,6 @@ async function connectToWA() {
                 connectToWA()
             }
         } else if (connection === 'open') {
-            // printGuruHeader(); // Commented out as per your request
-
             logTable('BOT STARTUP SUCCESS', {
                 'Status': 'Connected ✅',
                 'Time': new Date().toLocaleString(),
@@ -463,17 +458,16 @@ async function connectToWA() {
 
         // ========== WORKTYPE / MODE CONTROL ==========
         if (config.MODE === "private") {
-            // In private mode: ONLY the linked account / owner can get replies
-            // Everyone else (including in groups) is ignored
+            // Private mode → only the linked account (bot owner / session user) can command the bot
+            // Works in private DMs AND in groups — ignores everyone else completely
             if (!isOwner && !isMe) {
                 return;
             }
         }
         else if (config.MODE === "public" || !config.MODE) {
-            // public or unset → allow everyone (private + groups)
-            // no return
+            // Public mode → anyone can command it (in private chats and groups)
+            // no restriction
         }
-        // You can add back "groups" / "inbox" modes later if needed
 
         // take commands 
         const events = require('./command')
