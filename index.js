@@ -31,6 +31,24 @@ const {
 const chalk = require('chalk');
 const Table = require('cli-table3');
 
+// Big bold GURU MD header (prints once on startup) - commented out as per your earlier request
+// function printGuruHeader() { ... }
+
+// logTable function - THIS WAS MISSING in your deployed code
+function logTable(title, data = {}, color = 'green') {
+  const table = new Table({
+    head: [chalk.bold.cyan(` ${title.toUpperCase()} `)],
+    colWidths: [70],
+    style: { head: [chalk.bold[color]], border: ['grey'], 'padding-left': 2, 'padding-right': 2 }
+  });
+
+  Object.entries(data).forEach(([key, value]) => {
+    table.push([`${chalk.bold(key + ':')} ${chalk.white(value)}`]);
+  });
+
+  console.log(table.toString());
+}
+
 // Normal colorful log (for quick messages)
 function logInfo(message, color = 'green') {
   console.log(chalk[color].bold(`[GURU] ${message}`));
@@ -144,6 +162,8 @@ async function connectToWA() {
                 connectToWA()
             }
         } else if (connection === 'open') {
+            // printGuruHeader(); // Commented out as per your request
+
             logTable('BOT STARTUP SUCCESS', {
                 'Status': 'Connected ✅',
                 'Time': new Date().toLocaleString(),
@@ -869,7 +889,7 @@ async function connectToWA() {
                     displayName: await conn.getName(i + '@s.whatsapp.net'),
                     vcard: `BEGIN:VCARD\nVERSION:3.0\nN:${await conn.getName(
                         i + '@s.whatsapp.net',
-                    )}\nFN:GURU MD\nitem1.TEL;waid=\( {i}: \){i}\nitem1.X-ABLabel:Click here to chat\nitem2.EMAIL;type=INTERNET:gurutech@example.com\nitem2.X-ABLabel:GitHub\nitem3.URL:https://github.com/itsguruu/GURU\nitem3.X-ABLabel:GitHub\nitem4.ADR:;;Nairobi;;;;\nitem4.X-ABLabel:Region\nEND:VCARD`,
+                    )}\nFN:GURU MD\nitem1.TEL;waid=${i}\nitem1.X-ABLabel:Click here to chat\nitem2.EMAIL;type=INTERNET:gurutech@example.com\nitem2.X-ABLabel:GitHub\nitem3.URL:https://github.com/itsguruu/GURU\nitem3.X-ABLabel:GitHub\nitem4.ADR:;;Nairobi;;;;\nitem4.X-ABLabel:Region\nEND:VCARD`,
                 });
             }
             conn.sendMessage(
