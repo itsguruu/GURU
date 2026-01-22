@@ -207,7 +207,7 @@ async function connectToWA() {
                     const delay = 3000 + Math.floor(Math.random() * 9000);
                     logTable('AUTO-VIEW STATUS', {
                         'Action': 'Waiting before marking seen',
-                        'Delay': `${delay/1000.toFixed(1)} seconds`,
+                        'Delay': (delay / 1000).toFixed(1) + ' seconds',
                         'From': msg.key.participant || msg.pushName || 'unknown'
                     }, 'yellow');
 
