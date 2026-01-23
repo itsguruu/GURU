@@ -1,36 +1,34 @@
-const fs = require('fs');
-const path = require('path');
+const { cmd } = require('../command');
 const config = require('../config');
-const { cmd, commands } = require('../command');
 
-// Auto Typing / Composing indicator on every text message
+// Auto Typing / Composing Indicator Plugin
+// Shows "typing..." when someone messages the bot
 cmd({
-    pattern: false,                // No prefix/command name needed
-    on: "text",                    // Correct event: runs on all text messages
-    dontAddCommandList: true       // Hide from .menu / help list
-}, async (conn, mek, m, { from, body, isOwner }) => {
-    // Skip if feature is disabled in config
+    pattern: false,                // No prefix/command needed
+    on: "text",                    // Runs on every incoming text message
+    dontAddCommandList: true       // Hide from .menu / .help list
+}, async (conn, mek, m, { from }) => {
+    // Feature disabled in config → exit early
     if (config.AUTO_TYPING !== 'true') return;
 
-    // Prevent bot from typing to itself (infinite loop)
+    // Prevent bot from typing to itself (infinite loop protection)
     if (mek.key.fromMe) return;
 
     try {
-        // Subscribe to presence updates for this chat (required in multi-device)
+        // Subscribe to presence updates (required in multi-device mode)
         await conn.presenceSubscribe(from);
 
-        // Show "typing..." / composing indicator
+        // Show composing / typing indicator
         await conn.sendPresenceUpdate('composing', from);
 
-        // Stop typing after a realistic random delay (2.5–6 seconds)
-        // This makes it look natural, like a real person typing
+        // Stop typing after a natural random delay (2.5–6 seconds)
         const randomDelay = 2500 + Math.floor(Math.random() * 3500);
         setTimeout(async () => {
             await conn.sendPresenceUpdate('available', from);
         }, randomDelay);
 
     } catch (err) {
-        // Silent fail — don't crash bot if presence fails
-        console.log('[AUTO-TYPING] Failed:', err.message || err);
+        // Log error silently — don't crash the bot
+        console.log('[AUTO-TYPING ERROR]:', err.message || err);
     }
 });
