@@ -2,7 +2,7 @@
 process.env.NODE_OPTIONS = '--max-old-space-size=384';
 process.env.BAILEYS_MEMORY_OPTIMIZED = 'true';
 
-const {
+import {
   default: makeWASocket,
   useMultiFileAuthState,
   DisconnectReason,
@@ -25,10 +25,10 @@ const {
   jidDecode,
   fetchLatestBaileysVersion,
   Browsers
-} = require('@whiskeysockets/baileys')
+} from '@whiskeysockets/baileys'
 
 // === Stylish Logs Setup ===
-const chalk = require('chalk');
+import chalk from 'chalk';
 
 // Normal colorful log (for quick messages)
 function logInfo(message, color = 'green') {
@@ -36,23 +36,26 @@ function logInfo(message, color = 'green') {
 }
 
 const l = console.log
-const { getBuffer, getGroupAdmins, getRandom, h2k, isUrl, Json, runtime, sleep, fetchJson } = require('./lib/functions')
-const { AntiDelDB, initializeAntiDeleteSettings, setAnti, getAnti, getAllAntiDeleteSettings, saveContact, loadMessage, getName, getChatSummary, saveGroupMetadata, getGroupMetadata, saveMessageCount, getInactiveGroupMembers, getGroupMembersMessageCount, saveMessage } = require('./data')
-const fs = require('fs')
-const ff = require('fluent-ffmpeg')
-const P = require('pino')
-const config = require('./config')
-const qrcode = require('qrcode-terminal')
-const StickersTypes = require('wa-sticker-formatter')
-const util = require('util')
-const { sms, AntiDelete } = require('./lib')
-const FileType = require('file-type')
-const axios = require('axios')
-const { fromBuffer } = require('file-type')
-const bodyparser = require('body-parser')
-const os = require('os')
-const Crypto = require('crypto')
-const path = require('path')
+
+import { getBuffer, getGroupAdmins, getRandom, h2k, isUrl, Json, runtime, sleep, fetchJson } from './lib/functions'
+import { AntiDelDB, initializeAntiDeleteSettings, setAnti, getAnti, getAllAntiDeleteSettings, saveContact, loadMessage, getName, getChatSummary, saveGroupMetadata, getGroupMetadata, saveMessageCount, getInactiveGroupMembers, getGroupMembersMessageCount, saveMessage } from './data'
+
+import fs from 'fs'
+import ff from 'fluent-ffmpeg'
+import P from 'pino'
+import config from './config'
+import qrcode from 'qrcode-terminal'
+import StickersTypes from 'wa-sticker-formatter'
+import util from 'util'
+import { sms, AntiDelete } from './lib'
+import FileType from 'file-type'
+import axios from 'axios'
+import { fromBuffer } from 'file-type'
+import bodyparser from 'body-parser'
+import os from 'os'
+import Crypto from 'crypto'
+import path from 'path'
+
 const prefix = config.PREFIX
 
 const ownerNumber = ['254778074353']  
@@ -113,7 +116,7 @@ if (!fs.existsSync(__dirname + '/sessions/creds.json')) {
     }
 }
 
-const express = require("express");
+import express from "express";
 const app = express();
 const port = process.env.PORT || 9090;
 
