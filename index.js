@@ -2,8 +2,10 @@
 process.env.NODE_OPTIONS = '--max-old-space-size=384';
 process.env.BAILEYS_MEMORY_OPTIMIZED = 'true';
 
-import {
-  default as makeWASocket,
+import pkg from '@whiskeysockets/baileys';
+
+const {
+  default: makeWASocket,
   useMultiFileAuthState,
   DisconnectReason,
   jidNormalizedUser,
@@ -25,7 +27,7 @@ import {
   jidDecode,
   fetchLatestBaileysVersion,
   Browsers
-} from '@whiskeysockets/baileys'
+} = pkg;
 
 // === Stylish Logs Setup ===
 const chalk = require('chalk');
@@ -169,7 +171,7 @@ async function connectToWA() {
 ♦️ ᴛʜᴀɴᴋ ʏᴏᴜ ꜰᴏʀ ᴄʜᴏᴏꜱɪɴɢ GURU MD♦️!
 
 ╭──〔 🔗 Qᴜɪᴄᴋ ʟɪɴᴋ 〕  
-├─ ⭐ *ɢɪᴠᴇ ᴜꜱ ꜱᴛᴀʀ ᴀɴᴅ ꜰᴏʀᴋ:*  
+├─ ⭐ *ɢɪᴠᴇ ᴜꜱ ꜱᴛᴀʀ ᴀɴᴅ ꜏ᴏʀᴋ:*  
 │   ꜱᴛᴀʀ ᴜꜱ [ʜᴇʀᴇ](https://github.com/itsguruu/GURU)!  
 ╰─🛠️ *Prefix:* \`${prefix}\`
 
