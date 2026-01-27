@@ -2,8 +2,6 @@
 process.env.NODE_OPTIONS = '--max-old-space-size=384';
 process.env.BAILEYS_MEMORY_OPTIMIZED = 'true';
 
-import pkg from '@whiskeysockets/baileys';
-
 const {
   default: makeWASocket,
   useMultiFileAuthState,
@@ -27,7 +25,7 @@ const {
   jidDecode,
   fetchLatestBaileysVersion,
   Browsers
-} = pkg;
+} = require('@whiskeysockets/baileys');
 
 // === Stylish Logs Setup ===
 const chalk = require('chalk');
