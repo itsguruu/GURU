@@ -11,287 +11,290 @@ cmd({
 }, 
 async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
     try {
-        let dec = `╭━❮ *DOWNLOAD CMD* ❯━┈⊷
+        let dec = `╭━❮ 𝐆𝐔𝐑𝐔 𝐌𝐃 𝐂𝐎𝐌𝐌𝐀𝐍𝐃 𝐋𝐈𝐒𝐓 ❯━┈⊷
+
+╭━❮ *DOWNLOAD COMMANDS* ❯━┈⊷
 ┃▸
-┃▸📄 COMMAND: .play
-┃▸❕ Download Audio from yt
+┃▸📄 .play
+┃▸❕ Download audio from YouTube
 ┃▸ 
-┃▸📄 COMMAND: .song
-┃▸❕ Download song from yt
+┃▸📄 .song
+┃▸❕ Download song from YouTube
 ┃▸ 
-┃▸📄 COMMAND: .apk
-┃▸❕ Download apk from playstore
+┃▸📄 .apk
+┃▸❕ Download APK from Play Store
 ┃▸ 
-┃▸📄 COMMAND: .video
-┃▸❕ Download video from yt
+┃▸📄 .video
+┃▸❕ Download video from YouTube
 ┃▸ 
-┃▸📄 COMMAND: .fb
-┃▸❕ Download  video from fb
+┃▸📄 .fb
+┃▸❕ Download video from Facebook
 ┃▸ 
-┃▸📄 COMMAND: .tk
-┃▸❕ Download video from tiktok
+┃▸📄 .tk
+┃▸❕ Download video from TikTok
 ┃▸ 
-┃▸📄 COMMAND: .ig
-┃▸❕ Download video from ig
+┃▸📄 .ig
+┃▸❕ Download video from Instagram
 ┃▸ 
-┃▸📄 COMMAND: .gdrive
-┃▸❕ Download drive files
+┃▸📄 .gdrive
+┃▸❕ Download files from Google Drive
 ┃▸ 
-┃▸📄 COMMAND: .twitter
-┃▸❕ Download video from Twitter
+┃▸📄 .twitter
+┃▸❕ Download video from Twitter/X
 ┃▸
-┃▸📄 COMMAND: .img
+┃▸📄 .img
 ┃▸❕ Download image
 ┃▸
-┃▸📄 COMMAND: .darama
-┃▸❕ Download full episode video
+┃▸📄 .drama
+┃▸❕ Download full drama episode
 ┃▸
-┃▸📄 COMMAND: .play2
-┃▸❕ Download Audio from yt
+┃▸📄 .play2
+┃▸❕ Download audio from YouTube (alt)
 ┃▸ 
-┃▸📄 COMMAND: .video2
-┃▸❕ Download video from yt
+┃▸📄 .video2
+┃▸❕ Download video from YouTube (alt)
 ┃▸ 
-┃▸📄 COMMAND: .baiscope
-┃▸❕ Download video from baiscope
+┃▸📄 .baiscope
+┃▸❕ Download video from Baiscope
 ┃▸ 
-┃▸📄 COMMAND: .mfire
-┃▸❕ Download mediafire files
+┃▸📄 .mfire
+┃▸❕ Download files from MediaFire
 ╰━━━━━━━━━━━━⪼ 
 
-╭━❮ *ANMIE CMD* ❯━┈⊷
+╭━❮ *ANIME COMMANDS* ❯━┈⊷
 ┃▸
-┃▸📄 COMMAND: .yts
-┃▸❕ Serch videos from yt
+┃▸📄 .yts
+┃▸❕ Search videos on YouTube
 ┃▸
-┃▸📄 COMMAND: .king
-┃▸❕ get king about 
+┃▸📄 .king
+┃▸❕ Get info about King
 ┃▸
-┃▸📄 COMMAND: .dog
-┃▸❕ get random dog imgs
+┃▸📄 .dog
+┃▸❕ Get random dog images
 ┃▸
-┃▸📄 COMMAND: .anime 
-┃▸❕ get anime pics
+┃▸📄 .anime 
+┃▸❕ Get random anime pics
 ┃▸
-┃▸📄 COMMAND: .animegirl 
-┃▸❕ get animegirl pics
+┃▸📄 .animegirl 
+┃▸❕ Get anime girl pics
 ┃▸
-┃▸📄 COMMAND: .loli
-┃▸❕ get romantic anime pics
+┃▸📄 .loli
+┃▸❕ Get romantic anime pics
 ╰━━━━━━━━━━━━⪼  
 
-╭━❮‍ *INFO CMD* ❯━┈⊷
+╭━❮ *INFO COMMANDS* ❯━┈⊷
 ┃▸
-┃▸📄 COMMAND: .alive
-┃▸❕ Check online or not
+┃▸📄 .alive
+┃▸❕ Check if bot is online
 ┃▸  
-┃▸📄 COMMAND: .ping
+┃▸📄 .ping
 ┃▸❕ Check bot speed
 ┃▸  
-┃▸📄 COMMAND: .menu
-┃▸❕ Nero main menu
+┃▸📄 .menu
+┃▸❕ Main menu (Nero style)
 ┃▸
-┃▸📄 COMMAND: .menu2
-┃▸❕ Nero main menu2
+┃▸📄 .menu2
+┃▸❕ Secondary menu (Nero style)
 ┃▸ 
-┃▸📄 COMMAND: .ai
-┃▸❕ chat with ai bot
+┃▸📄 .ai
+┃▸❕ Chat with AI bot
 ┃▸
-┃▸📄 COMMAND: .system
-┃▸❕ check bot systems
+┃▸📄 .system
+┃▸❕ Check bot system info
 ┃▸
-┃▸📄 COMMAND: .owner
-┃▸❕ get owner info
+┃▸📄 .owner
+┃▸❕ Get owner info
 ┃▸ 
-┃▸📄 COMMAND: .status
-┃▸❕ check bot runtime
+┃▸📄 .status
+┃▸❕ Check bot runtime
 ┃▸
-┃▸📄 COMMAND: .about 
-┃▸❕ get about bot 
+┃▸📄 .about 
+┃▸❕ About the bot
 ┃▸
-┃▸📄 COMMAND: .list 
-┃▸❕ get bot command list
+┃▸📄 .list 
+┃▸❕ Show this command list
 ┃▸
-┃▸📄 COMMAND: .script 
-┃▸❕ get bot repository 
+┃▸📄 .script 
+┃▸❕ Get bot source code/repo
 ╰━━━━━━━━━━━━⪼
 
-╭━❮ *OTHER CMD* ❯━┈⊷
+╭━❮ *OTHER COMMANDS* ❯━┈⊷
 ┃▸
-┃▸📄 COMMAND: .joke 
-┃▸❕ Get Rendom joke 
+┃▸📄 .joke 
+┃▸❕ Get random joke
 ┃▸ 
-┃▸📄 COMMAND: .fact
-┃▸❕ Get Rendom fact
+┃▸📄 .fact
+┃▸❕ Get random fact
 ┃▸
-┃▸📄 COMMAND: .githubstalk 
-┃▸❕ Get github data any user
+┃▸📄 .githubstalk 
+┃▸❕ Stalk GitHub user info
 ┃▸ 
-┃▸📄 COMMAND: .gpass
-┃▸❕ Get a strong password 
+┃▸📄 .gpass
+┃▸❕ Generate strong password
 ┃▸
-┃▸📄 COMMAND: .hack
-┃▸❕ prank with friends 
+┃▸📄 .hack
+┃▸❕ Prank hack simulation
 ┃▸
-┃▸📄 COMMAND: .srepo 
-┃▸❕ serch repository 
+┃▸📄 .srepo 
+┃▸❕ Search GitHub repos
 ┃▸
-┃▸📄 COMMAND: .define 
-┃▸❕ serch any words
+┃▸📄 .define 
+┃▸❕ Define any word
 ╰━━━━━━━━━━━━⪼
 
-╭━❮ *GROUP CMD* ❯━┈⊷
+╭━❮ *GROUP COMMANDS* ❯━┈⊷
 ┃▸
-┃▸📄 COMMAND: .mute
-┃▸❕ Mute group
+┃▸📄 .mute
+┃▸❕ Mute the group
 ┃▸
-┃▸📄 COMMAND: .unmute
-┃▸❕ Unmute group
+┃▸📄 .unmute
+┃▸❕ Unmute the group
 ┃▸
-┃▸📄 COMMAND: .left
-┃▸❕ left group
+┃▸📄 .left
+┃▸❕ Leave the group
 ┃▸
-┃▸📄 COMMAND: .jid
-┃▸❕ group jid
+┃▸📄 .jid
+┃▸❕ Get group JID
 ┃▸
-┃▸📄 COMMAND: .remove
-┃▸❕ remove member from group
+┃▸📄 .remove
+┃▸❕ Remove member from group
 ┃▸
-┃▸📄 COMMAND: .delete 
-┃▸❕ remove sms from group 
+┃▸📄 .delete 
+┃▸❕ Delete message in group
 ┃▸
-┃▸📄 COMMAND: .add
-┃▸❕ add members in group 
+┃▸📄 .add
+┃▸❕ Add member to group
 ┃▸
-┃▸📄 COMMAND: .kick
-┃▸❕ kick any user 
+┃▸📄 .kick
+┃▸❕ Kick a user
 ┃▸
-┃▸📄 COMMAND: .kickall
-┃▸❕ remove all members from group
+┃▸📄 .kickall
+┃▸❕ Remove all members
 ┃▸
-┃▸📄 COMMAND: .setgoodbye
-┃▸❕ set member leave sms
+┃▸📄 .setgoodbye
+┃▸❕ Set goodbye message
 ┃▸
-┃▸📄 COMMAND: .setwelcome 
-┃▸❕ set member welcome sms
+┃▸📄 .setwelcome 
+┃▸❕ Set welcome message
 ┃▸
-┃▸📄 COMMAND: promote 
-┃▸❕ make group admin
+┃▸📄 .promote 
+┃▸❕ Promote to admin
 ┃▸
-┃▸📄 COMMAND: .demote 
-┃▸❕ dissmis any admin 
+┃▸📄 .demote 
+┃▸❕ Demote from admin
 ┃▸
-┃▸📄 COMMAND: .tagall
-┃▸❕ mention group all members
+┃▸📄 .tagall
+┃▸❕ Mention all members
 ┃▸
-┃▸📄 COMMAND: .getpic
-┃▸❕ get group profile
+┃▸📄 .getpic
+┃▸❕ Get group profile pic
 ┃▸
-┃▸📄 COMMAND: .invite 
-┃▸❕ get group invite link
+┃▸📄 .invite 
+┃▸❕ Get group invite link
 ┃▸
-┃▸📄 COMMAND: .revoke 
-┃▸❕ reset group link
+┃▸📄 .revoke 
+┃▸❕ Reset group link
 ┃▸
-┃▸📄 COMMAND: .joinrequests
-┃▸❕ cheack group panding members
+┃▸📄 .joinrequests
+┃▸❕ Check pending join requests
 ┃▸
-┃▸📄 COMMAND: .allreq
-┃▸❕ add group panding members 
+┃▸📄 .allreq
+┃▸❕ Approve all pending requests
 ┃▸
-┃▸📄 COMMAND: .lockgc
-┃▸❕ lock group private
+┃▸📄 .lockgc
+┃▸❕ Lock group (private)
 ┃▸
-┃▸📄 COMMAND: .unlockgc
-┃▸❕ unlock group all
+┃▸📄 .unlockgc
+┃▸❕ Unlock group
 ┃▸
-┃▸📄 COMMAND: .leave 
-┃▸❕ left any group 
+┃▸📄 .leave 
+┃▸❕ Leave any group
 ┃▸
-┃▸📄 COMMAND: .updategname
-┃▸❕ set group name
+┃▸📄 .updategname
+┃▸❕ Update group name
 ┃▸
-┃▸📄 COMMAND: .updategdesc
-┃▸❕ set group description 
+┃▸📄 .updategdesc
+┃▸❕ Update group description
 ┃▸
-┃▸📄 COMMAND: .joim
-┃▸❕ join invite link 
+┃▸📄 .join
+┃▸❕ Join via invite link
 ┃▸
-┃▸📄 COMMAND: .hidetag
-┃▸❕ mention any user hide
+┃▸📄 .hidetag
+┃▸❕ Hidden tag / mention
 ┃▸
-┃▸📄 COMMAND: .ginfo
-┃▸❕ get group information 
+┃▸📄 .ginfo
+┃▸❕ Get group information
 ┃▸
-┃▸📄 COMMAND: .disappear on
-┃▸❕ on disappear sms in group 
+┃▸📄 .disappear on
+┃▸❕ Enable disappearing messages
 ┃▸
-┃▸📄 COMMAND: .disappear off
-┃▸❕ off disappear sms in group 
+┃▸📄 .disappear off
+┃▸❕ Disable disappearing messages
 ┃▸
-┃▸📄 COMMAND: .senddm
-┃▸❕ send disappear sms in group 
+┃▸📄 .senddm
+┃▸❕ Send disappearing message
 ┃▸
-┃▸📄 COMMAND: .disappear 7d 24h 90d
-┃▸❕ set time to disappear sms
+┃▸📄 .disappear 7d / 24h / 90d
+┃▸❕ Set disappearing timer
 ╰━━━━━━━━━━━━⪼
 
-╭━❮ *OWNER CMD* ❯━┈⊷
+╭━❮ *OWNER COMMANDS* ❯━┈⊷
 ┃▸
-┃▸📄 COMMAND: .update
-┃▸❕ update bot velue 
+┃▸📄 .update
+┃▸❕ Update bot value
 ┃▸
-┃▸📄 COMMAND: .restart 
-┃▸❕ restart your bot
+┃▸📄 .restart 
+┃▸❕ Restart your bot
 ┃▸
-┃▸📄 COMMAND: .settings
-┃▸❕ see bot settings
+┃▸📄 .settings
+┃▸❕ View bot settings
 ┃▸
-┃▸📄 COMMAND: .owner 
-┃▸❕ get owner number 
+┃▸📄 .owner 
+┃▸❕ Get owner number
 ┃▸
-┃▸📄 COMMAND: .repo 
-┃▸❕ get bot repository 
+┃▸📄 .repo 
+┃▸❕ Get bot repository
 ┃▸
-┃▸📄 COMMAND: .system 
-┃▸❕ check bot systems
+┃▸📄 .system 
+┃▸❕ Check bot system info
 ┃▸
-┃▸📄 COMMAND: .block
-┃▸❕ block any user 
+┃▸📄 .block
+┃▸❕ Block a user
 ┃▸
-┃▸📄 COMMAND: .unblock 
-┃▸❕ unblock any user 
+┃▸📄 .unblock 
+┃▸❕ Unblock a user
 ┃▸
-┃▸📄 COMMAND: .shutdown 
-┃▸❕ logout your bot
+┃▸📄 .shutdown 
+┃▸❕ Logout/shutdown bot
 ┃▸
-┃▸📄 COMMAND: .clearchats 
-┃▸❕ clearchats from ib
+┃▸📄 .clearchats 
+┃▸❕ Clear inbox chats
 ┃▸
-┃▸📄 COMMAND: .setpp
-┃▸❕ update profile pic
+┃▸📄 .setpp
+┃▸❕ Update profile picture
 ┃▸
-┃▸📄 COMMAND: .broadcast 
-┃▸❕ creat broadcast 
+┃▸📄 .broadcast 
+┃▸❕ Create broadcast message
 ┃▸
-┃▸📄 COMMAND: .jid
-┃▸❕ get jid any user
+┃▸📄 .jid
+┃▸❕ Get JID of any user
 ┃▸
-┃▸📄 COMMAND: .gjid 
-┃▸❕ get group jid
+┃▸📄 .gjid 
+┃▸❕ Get group JID
 ╰━━━━━━━━━━━━⪼
 
-╭━❮ *CONVERT CMD* ❯━┈⊷
+╭━❮ *CONVERT COMMANDS* ❯━┈⊷
 ┃▸
-┃▸📄 COMMAND: .sticker
-┃▸❕ convert photo to sticker
+┃▸📄 .sticker
+┃▸❕ Convert photo to sticker
 ┃▸
-┃▸📄 COMMAND: .tts
-┃▸❕ change text to voice 
+┃▸📄 .tts
+┃▸❕ Text to speech (voice)
 ┃▸
-┃▸📄 COMMAND: .trt 
-┃▸❕ change languages 
+┃▸📄 .trt 
+┃▸❕ Translate languages
 ╰━━━━━━━━━━━━⪼
+
 > *© ᴄʀᴇᴀᴛᴇᴅ ʙʏ GuruTech*`;
 
         await conn.sendMessage(
