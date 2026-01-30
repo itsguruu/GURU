@@ -12,7 +12,7 @@ function cmd(info, func) {
     return data;
 }
 
-// ──────────────── AUTO-LOAD PLUGINS FROM ./plugins/ ────────────────
+// ──────────────── AUTO-LOAD ALL PLUGINS FROM ./plugins/ ────────────────
 const fs = require('fs');
 const path = require('path');
 
@@ -30,10 +30,12 @@ function loadPlugins() {
                 const pluginPath = path.join(pluginsDir, file);
                 const plugin = require(pluginPath);
 
-                // 1. Old style: plugin uses cmd() and exports nothing → already pushed via cmd()
-                // 2. New style: plugin exports { pattern, function, ... }
+                // Case 1: Old style plugin (uses cmd() inside the file)
+                // → already pushed via cmd() call during require()
+
+                // Case 2: New style plugin (direct module.exports = { pattern, function })
                 if (plugin.pattern && typeof plugin.function === 'function') {
-                    // Make it compatible with your cmd structure
+                    // Convert to your internal cmd format for full compatibility
                     const data = {
                         pattern: plugin.pattern,
                         desc: plugin.desc || '',
@@ -42,16 +44,15 @@ function loadPlugins() {
                         filename: plugin.filename || file,
                         function: plugin.function,
                         dontAddCommandList: plugin.dontAddCommandList || false,
-                        fromMe: plugin.fromMe || false
+                        fromMe: plugin.fromMe || false,
+                        alias: plugin.alias || []
                     };
                     commands.push(data);
-                    console.log(`[COMMAND] Loaded new-style plugin: ${file} → ${plugin.pattern}`);
-                } else if (!plugin.pattern) {
-                    console.log(`[COMMAND] Skipped ${file} — no pattern defined`);
+                    console.log(`[COMMAND] Loaded new-style: ${file} → ${plugin.pattern}`);
                 }
 
             } catch (err) {
-                console.error(`[COMMAND] Failed to load plugin ${file}: ${err.message}`);
+                console.error(`[COMMAND] Failed to load ${file}: ${err.message}`);
             }
         }
     });
@@ -59,7 +60,7 @@ function loadPlugins() {
     console.log(`[COMMAND] Total commands loaded: ${commands.length}`);
 }
 
-// Automatically load plugins when this file is required
+// Run auto-loader immediately when this file is required
 loadPlugins();
 
 module.exports = {
