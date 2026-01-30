@@ -21,7 +21,7 @@ module.exports = {
             const history = global.aiHistory.get(userId);
             history.push({ role: 'user', content: q });
 
-            // Call to Grok / OpenAI compatible endpoint (replace with your actual API key & endpoint)
+            // Call to Grok / xAI API (using the correct endpoint)
             const response = await fetch('https://api.x.ai/v1/chat/completions', {
                 method: 'POST',
                 headers: {
@@ -36,22 +36,33 @@ module.exports = {
                 })
             });
 
+            if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(errData.error?.message || `HTTP ${response.status}`);
+            }
+
             const data = await response.json();
             if (!data.choices?.[0]?.message?.content) {
                 throw new Error(data.error?.message || 'No response from AI');
             }
 
             const answer = data.choices[0].message.content.trim();
-            taggedReplyFn(answer);
 
+            // Send the reply using the passed taggedReplyFn (this uses your bot's tagging system)
+            await taggedReplyFn(answer);
+
+            // Save to history
             history.push({ role: 'assistant', content: answer });
 
-            // Keep only last 10 messages to save memory
-            if (history.length > 11) history.splice(1, history.length - 11);
+            // Keep only last 10 messages + system prompt (memory efficient)
+            if (history.length > 11) {
+                history.splice(1, history.length - 11);
+            }
 
         } catch (e) {
-            console.error(e);
-            taggedReplyFn('AI is taking a quick nap... 😅\n' + (e.message || 'Unknown error'));
+            console.error('AI command error:', e);
+            // Use taggedReplyFn for error too – consistent with your bot
+            await taggedReplyFn('AI is taking a quick nap... 😅\n' + (e.message || 'Unknown error'));
         }
     }
 };
